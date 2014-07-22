@@ -1,112 +1,112 @@
-#22-March-2014
+#19.07.14
 #Follow these instructions to clean behavioral data for Culture Seat Task
+
+#####This is being reworked for analysis with gazepoint
 
 
 ##############cvs##############
 
 
 ```{r ReadinCSV}
-AEK0317 <- read.csv("/Volumes/NO NAME/Csvgroup3-27/CSEyeAEK0317.csv")
+samplecsv <- read.csv("samplecsv.csv")
 
 ###########csv#########################################################
 
-#### Read in the CSV file
-AEK0317 <- read.csv("/Volumes/NO NAME/Csvgroup3-27/Csvgroup3-27/CSEyeAEK0317.csv")
 
 
 ### create empty marker column
-AEK0317$Markers <- NA
+samplecsv$Markers <- NA
 
 ### check/count number of markers
-table(AEK0317$DataType) ###should be 200 (w/ practice intro)
+#table(samplecsv$DataType) ###should be 200 (w/ practice intro)
 
 ### shift 'Start' by one row down, store it in the new column
-AEK0317$Markers [which(AEK0317$DataType == 'Start') + 1] <- 'Start'
+#samplecsv$Markers [which(samplecsv$DataType == 'Start') + 1] <- 'Start'
 ### shift 'Stop' by one row up, store it in the new column
-AEK0317$Markers [which(AEK0317$DataType == 'Stop') - 1] <- 'Stop'
+#samplecsv$Markers [which(samplecsv$DataType == 'Stop') - 1] <- 'Stop'
 
 ### Save Csv to clean in excel
-write.table(AEK0317,file="/Volumes/NO NAME/Csvgroup3-27/CSEyeAEK0317.csv",sep=",",row.names=F)
+#write.table(samplecsv,file="/Volumes/NO NAME/Csvgroup3-27/CSEyesamplecsv.csv",sep=",",row.names=F)
 
 ### Go into Excel. Sort/Delete Column "DataType". Create columns Delta, TimeMs, and TimeS
 
 #### Read in the CSV file
-AEK0317 <- read.csv("/Volumes/NO NAME/Csvgroup3-27/CSEyeAEK0317.csv")
+#samplecsv <- read.csv("/Volumes/NO NAME/Csvgroup3-27/CSEyesamplecsv.csv")
 
 #### For CultureSEAT, markers must be moved .5 seconds based on how the task blocks are written
 
 ### Create new Marker column that will replace old Markercolumn
-AEK0317$MarkersNew <- NA
+#samplecsv$MarkersNew <- NA
 
 ### Start markers are placed in data 0.5 seconds before stimulus onset, so move it down 0.5s.
-all.positionsStart <- sapply(which(AEK0317$Markers == "Start"), function(x) with(AEK0317, max(which(TimeS <= TimeS[[x]] + 0.5))))
-AEK0317$MarkersNew[all.positionsStart] <- "Start"
+#all.positionsStart <- sapply(which(samplecsv$Markers == "Start"), function(x) with(samplecsv, max(which(TimeS <= TimeS[[x]] + 0.5))))
+samplecsv$MarkersNew[all.positionsStart] <- "Start"
 
 
 ### Stop markers are placed in data 0.5 seconds after stimulus offset, so move it up 0.5s.
-all.positionsStop <- sapply(which(AEK0317$Markers == "Stop"), function(x) with (AEK0317, max(which(TimeS <= TimeS[[x]] - 0.5))))
-AEK0317$MarkersNew[all.positionsStop] <- "Stop"
+#all.positionsStop <- sapply(which(samplecsv$Markers == "Stop"), function(x) with (samplecsv, max(which(TimeS <= TimeS[[x]] - 0.5))))
+#samplecsv$MarkersNew[all.positionsStop] <- "Stop"
 
 #######TEST######
 
-AEK0317$MarkersNewNew <- NA
-AEK0317$MarkersNewNew [which(AEK0317$MarkersNew == "Start")] <- "Start"
+#samplecsv$MarkersNewNew <- NA
+#samplecsv$MarkersNewNew [which(samplecsv$MarkersNew == "Start")] <- "Start"
 
-all.positionsStop <- sapply(which(AEK0317$MarkersNew == "Start"), function(x) with(AEK0317, max(which(TimeMs <= TimeMs[[x]] + 1500))))
-AEK0317$MarkersNewNew[all.positionsStop] <- "Stop"
+#all.positionsStop <- sapply(which(samplecsv$MarkersNew == "Start"), function(x) with(samplecsv, max(which(TimeMs <= TimeMs[[x]] + 1500))))
+#samplecsv$MarkersNewNew[all.positionsStop] <- "Stop"
 
-table(AEK0317$MarkersNewNew)
+#table(samplecsv$MarkersNewNew)
 #########EndTest#########
 
 ### The next step is to fill the cells between the Starts and Stops in a way that allows us to sort by stimulus or block.
 ### To accomplish this, first sequentially number the Starts/Stops
 
 ### make a new column for stimlus numbering
-AEK0317$MarkerNumber <- NA
+#samplecsv$MarkerNumber <- NA
 
 ### In new column$Marker, label by sequential number the start markers from column$DataType
-AEK0317$MarkerNumber [which(AEK0317$MarkersNewNew == 'Start')] <- c(1:200)
+#samplecsv$MarkerNumber [which(samplecsv$MarkersNewNew == 'Start')] <- c(1:200)
 
 
 ### In new column$Marker, label by sequential number the stop markers from column$DataType
-AEK0317$MarkerNumber [which(AEK0317$MarkersNewNew == 'Stop')] <- c(1:200)
+#samplecsv$MarkerNumber [which(samplecsv$MarkersNewNew == 'Stop')] <- c(1:200)
 
 #check that number is 200 twice
-table(AEK0317$MarkerNumber)
+#table(samplecsv$MarkerNumber)
 
 ###### Save Csv to clean in excel
 ### In excel, delete the rows of data before the first and after the last stimulus
-write.table(AEK0317,file="/Volumes/NO NAME/Csvgroup3-27/CSEyeAEK0317.csv",sep=",",row.names=F)
+#write.table(samplecsv,file="/Volumes/NO NAME/Csvgroup3-27/CSEyesamplecsv.csv",sep=",",row.names=F)
 
 #### Read in the CSV file
-AEK0317 <- read.csv("/Volumes/NO NAME/Csvgroup3-27/CSEyeAEK0317.csv")
+#samplecsv <- read.csv("/Volumes/NO NAME/Csvgroup3-27/CSEyesamplecsv.csv")
 
 ### Now fill the space in between the numbers with their respective stimuli number
 ### Where (1, NA, NA, NA, 1) turns into (1, 1, 1, 1, 1)
 
-library(zoo)
+#library(zoo)
 
-a <- na.approx(AEK0317$MarkerNumber)
-la <- na.locf(AEK0317$MarkerNumber)
-data1 <- transform(AEK0317, MarkerNumber = ifelse(a == la,  a, NA))
+#a <- na.approx(samplecsv$MarkerNumber)
+#la <- na.locf(samplecsv$MarkerNumber)
+#data1 <- transform(samplecsv, MarkerNumber = ifelse(a == la,  a, NA))
 
 
 ###### Save Csv 
-write.table(data1,file="/Volumes/NO NAME/Csvgroup3-27/CSEyeAEK0317.csv",sep=",",row.names=F)
+#write.table(data1,file="/Volumes/NO NAME/Csvgroup3-27/CSEyesamplecsv.csv",sep=",",row.names=F)
 
 #### Read in the CSV file
-AEK0317 <- read.csv("/Volumes/NO NAME/Csvgroup3-27/CSEyeAEK0317.csv")
+#samplecsv <- read.csv("/Volumes/NO NAME/Csvgroup3-27/CSEyesamplecsv.csv")
 
 #This next step you are creating a new column that calculates in milliseconds from the stimulus onset to offset for each trial
 #It's important to do this ste before deleting any rows that would throw off the calculation
-AEK0317$group <- cumsum(AEK0317$MarkersNewNew=="Start" & !is.na(AEK0317$MarkersNewNew))
-AEK0317$PupilaryLatencyAll <- unlist(aggregate(TimeMs~group,AEK0317,function(x)cumsum(c(0,diff(x))))$TimeMs)
-AEK0317[,"group"] <- NULL
+samplecsv$group <- cumsum(samplecsv$MarkersNewNew=="Start" & !is.na(samplecsv$MarkersNewNew))
+samplecsv$PupilaryLatencyAll <- unlist(aggregate(TimeMs~group,samplecsv,function(x)cumsum(c(0,diff(x))))$TimeMs)
+samplecsv[,"group"] <- NULL
 
 
 #alter pupil latency
-AEK0317$attempt <- 2500
-AEK0317 <- transform(AEK0317, PupilaryLatencyAll = ifelse(PupilaryLatencyAll>=2000 & AEK0317$PupilaryLatencyAll<=2500, PupilaryLatencyAll - attempt, PupilaryLatencyAll))
+#samplecsv$attempt <- 2500
+#samplecsv <- transform(samplecsv, PupilaryLatencyAll = ifelse(PupilaryLatencyAll>=2000 & samplecsv$PupilaryLatencyAll<=2500, PupilaryLatencyAll - attempt, PupilaryLatencyAll))
 #####################
 
 
@@ -114,114 +114,114 @@ AEK0317 <- transform(AEK0317, PupilaryLatencyAll = ifelse(PupilaryLatencyAll>=20
 ###Label dependent variables: TaskCue, ValenceType, FaceType
 ###Use Task csv file to check block order and task version
 
-AEK0317$TaskCue <- NA
-AEK0317$FaceType <- NA
-AEK0317$ValenceType <- NA
+samplecsv$TaskCue <- NA
+samplecsv$FaceType <- NA
+samplecsv$ValenceType <- NA
 
 
 
 
 ### TaskCue
 #practice
-AEK0317$TaskCue [which(AEK0317$MarkerNumber>=1 & AEK0317$MarkerNumber<=8)] <- "InOut"
+samplecsv$TaskCue [which(samplecsv$MarkerNumber=1)] <- "InOut"
 ###run1
-AEK0317$TaskCue [which(AEK0317$MarkerNumber>=9 & AEK0317$MarkerNumber<=16)] <- "InOut"
-AEK0317$TaskCue [which(AEK0317$MarkerNumber>=17 & AEK0317$MarkerNumber<=24)] <- "LikeDislike"
-AEK0317$TaskCue [which(AEK0317$MarkerNumber>=25 & AEK0317$MarkerNumber<=32)] <- "InOut"
-AEK0317$TaskCue [which(AEK0317$MarkerNumber>=33 & AEK0317$MarkerNumber<=40)] <- "MaleFemale"
-AEK0317$TaskCue [which(AEK0317$MarkerNumber>=41 & AEK0317$MarkerNumber<=48)] <- "LikeDislike"
-AEK0317$TaskCue [which(AEK0317$MarkerNumber>=49 & AEK0317$MarkerNumber<=56)] <- "MaleFemale"
-AEK0317$TaskCue [which(AEK0317$MarkerNumber>=57 & AEK0317$MarkerNumber<=64)] <- "LikeDislike"
-AEK0317$TaskCue [which(AEK0317$MarkerNumber>=65 & AEK0317$MarkerNumber<=72)] <- "MaleFemale"
+samplecsv$TaskCue [which(samplecsv$MarkerNumber>=9 & samplecsv$MarkerNumber<=16)] <- "InOut"
+samplecsv$TaskCue [which(samplecsv$MarkerNumber>=17 & samplecsv$MarkerNumber<=24)] <- "LikeDislike"
+samplecsv$TaskCue [which(samplecsv$MarkerNumber>=25 & samplecsv$MarkerNumber<=32)] <- "InOut"
+samplecsv$TaskCue [which(samplecsv$MarkerNumber>=33 & samplecsv$MarkerNumber<=40)] <- "MaleFemale"
+samplecsv$TaskCue [which(samplecsv$MarkerNumber>=41 & samplecsv$MarkerNumber<=48)] <- "LikeDislike"
+samplecsv$TaskCue [which(samplecsv$MarkerNumber>=49 & samplecsv$MarkerNumber<=56)] <- "MaleFemale"
+samplecsv$TaskCue [which(samplecsv$MarkerNumber>=57 & samplecsv$MarkerNumber<=64)] <- "LikeDislike"
+samplecsv$TaskCue [which(samplecsv$MarkerNumber>=65 & samplecsv$MarkerNumber<=72)] <- "MaleFemale"
 
 ### run2
-AEK0317$TaskCue [which(AEK0317$MarkerNumber>=73 & AEK0317$MarkerNumber<=80)] <- "InOut"
-AEK0317$TaskCue [which(AEK0317$MarkerNumber>=81 & AEK0317$MarkerNumber<=88)] <- "MaleFemale"
-AEK0317$TaskCue [which(AEK0317$MarkerNumber>=89 & AEK0317$MarkerNumber<=96)] <- "InOut"
-AEK0317$TaskCue [which(AEK0317$MarkerNumber>=97 & AEK0317$MarkerNumber<=104)] <- "MaleFemale"
-AEK0317$TaskCue [which(AEK0317$MarkerNumber>=105 & AEK0317$MarkerNumber<=112)] <- "LikeDislike"
-AEK0317$TaskCue [which(AEK0317$MarkerNumber>=113 & AEK0317$MarkerNumber<=120)] <- "MaleFemale"
-AEK0317$TaskCue [which(AEK0317$MarkerNumber>=121 & AEK0317$MarkerNumber<=128)] <- "InOut"
-AEK0317$TaskCue [which(AEK0317$MarkerNumber>=129 & AEK0317$MarkerNumber<=136)] <- "LikeDislike"
+samplecsv$TaskCue [which(samplecsv$MarkerNumber>=73 & samplecsv$MarkerNumber<=80)] <- "InOut"
+samplecsv$TaskCue [which(samplecsv$MarkerNumber>=81 & samplecsv$MarkerNumber<=88)] <- "MaleFemale"
+samplecsv$TaskCue [which(samplecsv$MarkerNumber>=89 & samplecsv$MarkerNumber<=96)] <- "InOut"
+samplecsv$TaskCue [which(samplecsv$MarkerNumber>=97 & samplecsv$MarkerNumber<=104)] <- "MaleFemale"
+samplecsv$TaskCue [which(samplecsv$MarkerNumber>=105 & samplecsv$MarkerNumber<=112)] <- "LikeDislike"
+samplecsv$TaskCue [which(samplecsv$MarkerNumber>=113 & samplecsv$MarkerNumber<=120)] <- "MaleFemale"
+samplecsv$TaskCue [which(samplecsv$MarkerNumber>=121 & samplecsv$MarkerNumber<=128)] <- "InOut"
+samplecsv$TaskCue [which(samplecsv$MarkerNumber>=129 & samplecsv$MarkerNumber<=136)] <- "LikeDislike"
 
 ### run3
 
-AEK0317$TaskCue [which(AEK0317$MarkerNumber>=137 & AEK0317$MarkerNumber<=144)] <- "InOut"
-AEK0317$TaskCue [which(AEK0317$MarkerNumber>=145 & AEK0317$MarkerNumber<=152)] <- "LikeDislike"
-AEK0317$TaskCue [which(AEK0317$MarkerNumber>=153 & AEK0317$MarkerNumber<=160)] <- "MaleFemale"
-AEK0317$TaskCue [which(AEK0317$MarkerNumber>=161 & AEK0317$MarkerNumber<=168)] <- "InOut"
-AEK0317$TaskCue [which(AEK0317$MarkerNumber>=169 & AEK0317$MarkerNumber<=176)] <- "MaleFemale"
-AEK0317$TaskCue [which(AEK0317$MarkerNumber>=177 & AEK0317$MarkerNumber<=184)] <- "LikeDislike"
-AEK0317$TaskCue [which(AEK0317$MarkerNumber>=185 & AEK0317$MarkerNumber<=192)] <- "InOut"
-AEK0317$TaskCue [which(AEK0317$MarkerNumber>=193 & AEK0317$MarkerNumber<=200)] <- "LikeDislike"
+samplecsv$TaskCue [which(samplecsv$MarkerNumber>=137 & samplecsv$MarkerNumber<=144)] <- "InOut"
+samplecsv$TaskCue [which(samplecsv$MarkerNumber>=145 & samplecsv$MarkerNumber<=152)] <- "LikeDislike"
+samplecsv$TaskCue [which(samplecsv$MarkerNumber>=153 & samplecsv$MarkerNumber<=160)] <- "MaleFemale"
+samplecsv$TaskCue [which(samplecsv$MarkerNumber>=161 & samplecsv$MarkerNumber<=168)] <- "InOut"
+samplecsv$TaskCue [which(samplecsv$MarkerNumber>=169 & samplecsv$MarkerNumber<=176)] <- "MaleFemale"
+samplecsv$TaskCue [which(samplecsv$MarkerNumber>=177 & samplecsv$MarkerNumber<=184)] <- "LikeDislike"
+samplecsv$TaskCue [which(samplecsv$MarkerNumber>=185 & samplecsv$MarkerNumber<=192)] <- "InOut"
+samplecsv$TaskCue [which(samplecsv$MarkerNumber>=193 & samplecsv$MarkerNumber<=200)] <- "LikeDislike"
 ### FaceType
 
 #practice
-AEK0317$FaceType [which(AEK0317$MarkerNumber>=1 & AEK0317$MarkerNumber<=8)] <- "Caucasion"
+samplecsv$FaceType [which(samplecsv$MarkerNumber>=1 & samplecsv$MarkerNumber<=8)] <- "Caucasion"
 ###run1
-AEK0317$FaceType [which(AEK0317$MarkerNumber>=9 & AEK0317$MarkerNumber<=16)] <- "Asian"
-AEK0317$FaceType [which(AEK0317$MarkerNumber>=17 & AEK0317$MarkerNumber<=24)] <- "Asian"
-AEK0317$FaceType [which(AEK0317$MarkerNumber>=25 & AEK0317$MarkerNumber<=32)] <- "Caucasion"
-AEK0317$FaceType [which(AEK0317$MarkerNumber>=33 & AEK0317$MarkerNumber<=40)] <- "Caucasion"
-AEK0317$FaceType [which(AEK0317$MarkerNumber>=41 & AEK0317$MarkerNumber<=48)] <- "Asian"
-AEK0317$FaceType [which(AEK0317$MarkerNumber>=49 & AEK0317$MarkerNumber<=56)] <- "Caucasion"
-AEK0317$FaceType [which(AEK0317$MarkerNumber>=57 & AEK0317$MarkerNumber<=64)] <- "Caucasion"
-AEK0317$FaceType [which(AEK0317$MarkerNumber>=65 & AEK0317$MarkerNumber<=72)] <- "Asian"
+samplecsv$FaceType [which(samplecsv$MarkerNumber>=9 & samplecsv$MarkerNumber<=16)] <- "Asian"
+samplecsv$FaceType [which(samplecsv$MarkerNumber>=17 & samplecsv$MarkerNumber<=24)] <- "Asian"
+samplecsv$FaceType [which(samplecsv$MarkerNumber>=25 & samplecsv$MarkerNumber<=32)] <- "Caucasion"
+samplecsv$FaceType [which(samplecsv$MarkerNumber>=33 & samplecsv$MarkerNumber<=40)] <- "Caucasion"
+samplecsv$FaceType [which(samplecsv$MarkerNumber>=41 & samplecsv$MarkerNumber<=48)] <- "Asian"
+samplecsv$FaceType [which(samplecsv$MarkerNumber>=49 & samplecsv$MarkerNumber<=56)] <- "Caucasion"
+samplecsv$FaceType [which(samplecsv$MarkerNumber>=57 & samplecsv$MarkerNumber<=64)] <- "Caucasion"
+samplecsv$FaceType [which(samplecsv$MarkerNumber>=65 & samplecsv$MarkerNumber<=72)] <- "Asian"
 
 ### run2
-AEK0317$FaceType [which(AEK0317$MarkerNumber>=73 & AEK0317$MarkerNumber<=80)] <- "Caucasion"
-AEK0317$FaceType [which(AEK0317$MarkerNumber>=81 & AEK0317$MarkerNumber<=88)] <- "Caucasion"
-AEK0317$FaceType [which(AEK0317$MarkerNumber>=89 & AEK0317$MarkerNumber<=96)] <- "Asian"
-AEK0317$FaceType [which(AEK0317$MarkerNumber>=97 & AEK0317$MarkerNumber<=104)] <- "Asian"
-AEK0317$FaceType [which(AEK0317$MarkerNumber>=105 & AEK0317$MarkerNumber<=112)] <- "Asian"
-AEK0317$FaceType [which(AEK0317$MarkerNumber>=113 & AEK0317$MarkerNumber<=120)] <- "Caucasion"
-AEK0317$FaceType [which(AEK0317$MarkerNumber>=121 & AEK0317$MarkerNumber<=128)] <- "Asian"
-AEK0317$FaceType [which(AEK0317$MarkerNumber>=129 & AEK0317$MarkerNumber<=136)] <- "Caucasion"
+samplecsv$FaceType [which(samplecsv$MarkerNumber>=73 & samplecsv$MarkerNumber<=80)] <- "Caucasion"
+samplecsv$FaceType [which(samplecsv$MarkerNumber>=81 & samplecsv$MarkerNumber<=88)] <- "Caucasion"
+samplecsv$FaceType [which(samplecsv$MarkerNumber>=89 & samplecsv$MarkerNumber<=96)] <- "Asian"
+samplecsv$FaceType [which(samplecsv$MarkerNumber>=97 & samplecsv$MarkerNumber<=104)] <- "Asian"
+samplecsv$FaceType [which(samplecsv$MarkerNumber>=105 & samplecsv$MarkerNumber<=112)] <- "Asian"
+samplecsv$FaceType [which(samplecsv$MarkerNumber>=113 & samplecsv$MarkerNumber<=120)] <- "Caucasion"
+samplecsv$FaceType [which(samplecsv$MarkerNumber>=121 & samplecsv$MarkerNumber<=128)] <- "Asian"
+samplecsv$FaceType [which(samplecsv$MarkerNumber>=129 & samplecsv$MarkerNumber<=136)] <- "Caucasion"
 
 ### run3
 
 
-AEK0317$FaceType [which(AEK0317$MarkerNumber>=137 & AEK0317$MarkerNumber<=144)] <- "Caucasion"
-AEK0317$FaceType [which(AEK0317$MarkerNumber>=145 & AEK0317$MarkerNumber<=152)] <- "Caucasion"
-AEK0317$FaceType [which(AEK0317$MarkerNumber>=153 & AEK0317$MarkerNumber<=160)] <- "Asian"
-AEK0317$FaceType [which(AEK0317$MarkerNumber>=161 & AEK0317$MarkerNumber<=168)] <- "Caucasion"
-AEK0317$FaceType [which(AEK0317$MarkerNumber>=169 & AEK0317$MarkerNumber<=176)] <- "Asian"
-AEK0317$FaceType [which(AEK0317$MarkerNumber>=177 & AEK0317$MarkerNumber<=184)] <- "Asian"
-AEK0317$FaceType [which(AEK0317$MarkerNumber>=185 & AEK0317$MarkerNumber<=192)] <- "Asian"
-AEK0317$FaceType [which(AEK0317$MarkerNumber>=193 & AEK0317$MarkerNumber<=200)] <- "Asian"
+samplecsv$FaceType [which(samplecsv$MarkerNumber>=137 & samplecsv$MarkerNumber<=144)] <- "Caucasion"
+samplecsv$FaceType [which(samplecsv$MarkerNumber>=145 & samplecsv$MarkerNumber<=152)] <- "Caucasion"
+samplecsv$FaceType [which(samplecsv$MarkerNumber>=153 & samplecsv$MarkerNumber<=160)] <- "Asian"
+samplecsv$FaceType [which(samplecsv$MarkerNumber>=161 & samplecsv$MarkerNumber<=168)] <- "Caucasion"
+samplecsv$FaceType [which(samplecsv$MarkerNumber>=169 & samplecsv$MarkerNumber<=176)] <- "Asian"
+samplecsv$FaceType [which(samplecsv$MarkerNumber>=177 & samplecsv$MarkerNumber<=184)] <- "Asian"
+samplecsv$FaceType [which(samplecsv$MarkerNumber>=185 & samplecsv$MarkerNumber<=192)] <- "Asian"
+samplecsv$FaceType [which(samplecsv$MarkerNumber>=193 & samplecsv$MarkerNumber<=200)] <- "Asian"
 
 ### ValenceType
 #practice
-AEK0317$ValenceType [which(AEK0317$MarkerNumber>=1 & AEK0317$MarkerNumber<=8)] <- "Fear"
+samplecsv$ValenceType [which(samplecsv$MarkerNumber>=1 & samplecsv$MarkerNumber<=8)] <- "Fear"
 ###run1
-AEK0317$ValenceType [which(AEK0317$MarkerNumber>=9 & AEK0317$MarkerNumber<=16)] <- "Fear"
-AEK0317$ValenceType [which(AEK0317$MarkerNumber>=17 & AEK0317$MarkerNumber<=24)] <- "Neutral"
-AEK0317$ValenceType [which(AEK0317$MarkerNumber>=25 & AEK0317$MarkerNumber<=32)] <- "Neutral"
-AEK0317$ValenceType [which(AEK0317$MarkerNumber>=33 & AEK0317$MarkerNumber<=40)] <- "Fear"
-AEK0317$ValenceType [which(AEK0317$MarkerNumber>=41 & AEK0317$MarkerNumber<=48)] <- "Fear"
-AEK0317$ValenceType [which(AEK0317$MarkerNumber>=49 & AEK0317$MarkerNumber<=56)] <- "Neutral"
-AEK0317$ValenceType [which(AEK0317$MarkerNumber>=57 & AEK0317$MarkerNumber<=64)] <- "Neutral"
-AEK0317$ValenceType [which(AEK0317$MarkerNumber>=65 & AEK0317$MarkerNumber<=72)] <- "Neutral"
+samplecsv$ValenceType [which(samplecsv$MarkerNumber>=9 & samplecsv$MarkerNumber<=16)] <- "Fear"
+samplecsv$ValenceType [which(samplecsv$MarkerNumber>=17 & samplecsv$MarkerNumber<=24)] <- "Neutral"
+samplecsv$ValenceType [which(samplecsv$MarkerNumber>=25 & samplecsv$MarkerNumber<=32)] <- "Neutral"
+samplecsv$ValenceType [which(samplecsv$MarkerNumber>=33 & samplecsv$MarkerNumber<=40)] <- "Fear"
+samplecsv$ValenceType [which(samplecsv$MarkerNumber>=41 & samplecsv$MarkerNumber<=48)] <- "Fear"
+samplecsv$ValenceType [which(samplecsv$MarkerNumber>=49 & samplecsv$MarkerNumber<=56)] <- "Neutral"
+samplecsv$ValenceType [which(samplecsv$MarkerNumber>=57 & samplecsv$MarkerNumber<=64)] <- "Neutral"
+samplecsv$ValenceType [which(samplecsv$MarkerNumber>=65 & samplecsv$MarkerNumber<=72)] <- "Neutral"
 
 ### run2
-AEK0317$ValenceType [which(AEK0317$MarkerNumber>=73 & AEK0317$MarkerNumber<=80)] <- "Fear"
-AEK0317$ValenceType [which(AEK0317$MarkerNumber>=81 & AEK0317$MarkerNumber<=88)] <- "Neutral"
-AEK0317$ValenceType [which(AEK0317$MarkerNumber>=89 & AEK0317$MarkerNumber<=96)] <- "Neutral"
-AEK0317$ValenceType [which(AEK0317$MarkerNumber>=97 & AEK0317$MarkerNumber<=104)] <- "Fear"
-AEK0317$ValenceType [which(AEK0317$MarkerNumber>=105 & AEK0317$MarkerNumber<=112)] <- "Neutral"
-AEK0317$ValenceType [which(AEK0317$MarkerNumber>=113 & AEK0317$MarkerNumber<=120)] <- "Fear"
-AEK0317$ValenceType [which(AEK0317$MarkerNumber>=121 & AEK0317$MarkerNumber<=128)] <- "Fear"
-AEK0317$ValenceType [which(AEK0317$MarkerNumber>=129 & AEK0317$MarkerNumber<=136)] <- "Neutral"
+samplecsv$ValenceType [which(samplecsv$MarkerNumber>=73 & samplecsv$MarkerNumber<=80)] <- "Fear"
+samplecsv$ValenceType [which(samplecsv$MarkerNumber>=81 & samplecsv$MarkerNumber<=88)] <- "Neutral"
+samplecsv$ValenceType [which(samplecsv$MarkerNumber>=89 & samplecsv$MarkerNumber<=96)] <- "Neutral"
+samplecsv$ValenceType [which(samplecsv$MarkerNumber>=97 & samplecsv$MarkerNumber<=104)] <- "Fear"
+samplecsv$ValenceType [which(samplecsv$MarkerNumber>=105 & samplecsv$MarkerNumber<=112)] <- "Neutral"
+samplecsv$ValenceType [which(samplecsv$MarkerNumber>=113 & samplecsv$MarkerNumber<=120)] <- "Fear"
+samplecsv$ValenceType [which(samplecsv$MarkerNumber>=121 & samplecsv$MarkerNumber<=128)] <- "Fear"
+samplecsv$ValenceType [which(samplecsv$MarkerNumber>=129 & samplecsv$MarkerNumber<=136)] <- "Neutral"
 
 ### run3
-AEK0317$ValenceType [which(AEK0317$MarkerNumber>=137 & AEK0317$MarkerNumber<=144)] <- "Neutral"
-AEK0317$ValenceType [which(AEK0317$MarkerNumber>=145 & AEK0317$MarkerNumber<=152)] <- "Fear"
-AEK0317$ValenceType [which(AEK0317$MarkerNumber>=153 & AEK0317$MarkerNumber<=160)] <- "Fear"
-AEK0317$ValenceType [which(AEK0317$MarkerNumber>=161 & AEK0317$MarkerNumber<=168)] <- "Fear"
-AEK0317$ValenceType [which(AEK0317$MarkerNumber>=169 & AEK0317$MarkerNumber<=176)] <- "Neutral"
-AEK0317$ValenceType [which(AEK0317$MarkerNumber>=177 & AEK0317$MarkerNumber<=184)] <- "Fear"
-AEK0317$ValenceType [which(AEK0317$MarkerNumber>=185 & AEK0317$MarkerNumber<=192)] <- "Neutral"
-AEK0317$ValenceType [which(AEK0317$MarkerNumber>=193 & AEK0317$MarkerNumber<=200)] <- "Fear"
+samplecsv$ValenceType [which(samplecsv$MarkerNumber>=137 & samplecsv$MarkerNumber<=144)] <- "Neutral"
+samplecsv$ValenceType [which(samplecsv$MarkerNumber>=145 & samplecsv$MarkerNumber<=152)] <- "Fear"
+samplecsv$ValenceType [which(samplecsv$MarkerNumber>=153 & samplecsv$MarkerNumber<=160)] <- "Fear"
+samplecsv$ValenceType [which(samplecsv$MarkerNumber>=161 & samplecsv$MarkerNumber<=168)] <- "Fear"
+samplecsv$ValenceType [which(samplecsv$MarkerNumber>=169 & samplecsv$MarkerNumber<=176)] <- "Neutral"
+samplecsv$ValenceType [which(samplecsv$MarkerNumber>=177 & samplecsv$MarkerNumber<=184)] <- "Fear"
+samplecsv$ValenceType [which(samplecsv$MarkerNumber>=185 & samplecsv$MarkerNumber<=192)] <- "Neutral"
+samplecsv$ValenceType [which(samplecsv$MarkerNumber>=193 & samplecsv$MarkerNumber<=200)] <- "Fear"
 #don't save yet
 
 
@@ -229,662 +229,662 @@ AEK0317$ValenceType [which(AEK0317$MarkerNumber>=193 & AEK0317$MarkerNumber<=200
 #Found it necessary to calculuate based on dependent variable to see pertinent trends
 #Redundent, look for cleaner way
 
-outVec <- na.approx(AEK0317$MarkerNumber, na.rm=F)
-AEK0317$MarkerNumber <- outVec
+outVec <- na.approx(samplecsv$MarkerNumber, na.rm=F)
+samplecsv$MarkerNumber <- outVec
 
 
 #POST INOUT FIXATION
-AEK0317$TaskCue [which(AEK0317$MarkerNumber>1 & AEK0317$MarkerNumber<2 | AEK0317$MarkerNumber>2 & AEK0317$MarkerNumber<3 | AEK0317$MarkerNumber>3 & AEK0317$MarkerNumber<4 | AEK0317$MarkerNumber>4 & AEK0317$MarkerNumber<5 | AEK0317$MarkerNumber>5 & AEK0317$MarkerNumber<6 | AEK0317$MarkerNumber>6 & AEK0317$MarkerNumber<7 | AEK0317$MarkerNumber>7 & AEK0317$MarkerNumber<8)] <- "PostInOutFixation"
+samplecsv$TaskCue [which(samplecsv$MarkerNumber>1 & samplecsv$MarkerNumber<2 | samplecsv$MarkerNumber>2 & samplecsv$MarkerNumber<3 | samplecsv$MarkerNumber>3 & samplecsv$MarkerNumber<4 | samplecsv$MarkerNumber>4 & samplecsv$MarkerNumber<5 | samplecsv$MarkerNumber>5 & samplecsv$MarkerNumber<6 | samplecsv$MarkerNumber>6 & samplecsv$MarkerNumber<7 | samplecsv$MarkerNumber>7 & samplecsv$MarkerNumber<8)] <- "PostInOutFixation"
 
-AEK0317$TaskCue [which(AEK0317$MarkerNumber>9 & AEK0317$MarkerNumber<10 | AEK0317$MarkerNumber>10 & AEK0317$MarkerNumber<11 | AEK0317$MarkerNumber>11 & AEK0317$MarkerNumber<12 | AEK0317$MarkerNumber>12 & AEK0317$MarkerNumber<13 | AEK0317$MarkerNumber>13 & AEK0317$MarkerNumber<14 | AEK0317$MarkerNumber>14 & AEK0317$MarkerNumber<15 | AEK0317$MarkerNumber>15 & AEK0317$MarkerNumber<16)] <- "PostInOutFixation"
+samplecsv$TaskCue [which(samplecsv$MarkerNumber>9 & samplecsv$MarkerNumber<10 | samplecsv$MarkerNumber>10 & samplecsv$MarkerNumber<11 | samplecsv$MarkerNumber>11 & samplecsv$MarkerNumber<12 | samplecsv$MarkerNumber>12 & samplecsv$MarkerNumber<13 | samplecsv$MarkerNumber>13 & samplecsv$MarkerNumber<14 | samplecsv$MarkerNumber>14 & samplecsv$MarkerNumber<15 | samplecsv$MarkerNumber>15 & samplecsv$MarkerNumber<16)] <- "PostInOutFixation"
 
-AEK0317$TaskCue [which(AEK0317$MarkerNumber>25 & AEK0317$MarkerNumber<26 | AEK0317$MarkerNumber>26 & AEK0317$MarkerNumber<27 | AEK0317$MarkerNumber>27 & AEK0317$MarkerNumber<28 | AEK0317$MarkerNumber>28 & AEK0317$MarkerNumber<29 | AEK0317$MarkerNumber>29 & AEK0317$MarkerNumber<30 | AEK0317$MarkerNumber>30 & AEK0317$MarkerNumber<31 | AEK0317$MarkerNumber>31 & AEK0317$MarkerNumber<32)] <- "PostInOutFixation"
+samplecsv$TaskCue [which(samplecsv$MarkerNumber>25 & samplecsv$MarkerNumber<26 | samplecsv$MarkerNumber>26 & samplecsv$MarkerNumber<27 | samplecsv$MarkerNumber>27 & samplecsv$MarkerNumber<28 | samplecsv$MarkerNumber>28 & samplecsv$MarkerNumber<29 | samplecsv$MarkerNumber>29 & samplecsv$MarkerNumber<30 | samplecsv$MarkerNumber>30 & samplecsv$MarkerNumber<31 | samplecsv$MarkerNumber>31 & samplecsv$MarkerNumber<32)] <- "PostInOutFixation"
 
-AEK0317$TaskCue [which(AEK0317$MarkerNumber>73 & AEK0317$MarkerNumber<74 | AEK0317$MarkerNumber>74 & AEK0317$MarkerNumber<75 | AEK0317$MarkerNumber>75 & AEK0317$MarkerNumber<76 | AEK0317$MarkerNumber>76 & AEK0317$MarkerNumber<77 | AEK0317$MarkerNumber>77 & AEK0317$MarkerNumber<78 | AEK0317$MarkerNumber>78 & AEK0317$MarkerNumber<79 | AEK0317$MarkerNumber>79 & AEK0317$MarkerNumber<80)] <- "PostInOutFixation"
+samplecsv$TaskCue [which(samplecsv$MarkerNumber>73 & samplecsv$MarkerNumber<74 | samplecsv$MarkerNumber>74 & samplecsv$MarkerNumber<75 | samplecsv$MarkerNumber>75 & samplecsv$MarkerNumber<76 | samplecsv$MarkerNumber>76 & samplecsv$MarkerNumber<77 | samplecsv$MarkerNumber>77 & samplecsv$MarkerNumber<78 | samplecsv$MarkerNumber>78 & samplecsv$MarkerNumber<79 | samplecsv$MarkerNumber>79 & samplecsv$MarkerNumber<80)] <- "PostInOutFixation"
 
-AEK0317$TaskCue [which(AEK0317$MarkerNumber>89 & AEK0317$MarkerNumber<90 | AEK0317$MarkerNumber>90 & AEK0317$MarkerNumber<91 | AEK0317$MarkerNumber>91 & AEK0317$MarkerNumber<92 | AEK0317$MarkerNumber>92 & AEK0317$MarkerNumber<93 | AEK0317$MarkerNumber>93 & AEK0317$MarkerNumber<94 | AEK0317$MarkerNumber>94 & AEK0317$MarkerNumber<95 | AEK0317$MarkerNumber>95 & AEK0317$MarkerNumber<96)] <- "PostInOutFixation"
+samplecsv$TaskCue [which(samplecsv$MarkerNumber>89 & samplecsv$MarkerNumber<90 | samplecsv$MarkerNumber>90 & samplecsv$MarkerNumber<91 | samplecsv$MarkerNumber>91 & samplecsv$MarkerNumber<92 | samplecsv$MarkerNumber>92 & samplecsv$MarkerNumber<93 | samplecsv$MarkerNumber>93 & samplecsv$MarkerNumber<94 | samplecsv$MarkerNumber>94 & samplecsv$MarkerNumber<95 | samplecsv$MarkerNumber>95 & samplecsv$MarkerNumber<96)] <- "PostInOutFixation"
 
-AEK0317$TaskCue [which(AEK0317$MarkerNumber>121 & AEK0317$MarkerNumber<122 | AEK0317$MarkerNumber>122 & AEK0317$MarkerNumber<123 | AEK0317$MarkerNumber>123 & AEK0317$MarkerNumber<124 | AEK0317$MarkerNumber>124 & AEK0317$MarkerNumber<125 | AEK0317$MarkerNumber>125 & AEK0317$MarkerNumber<126 | AEK0317$MarkerNumber>126 & AEK0317$MarkerNumber<127 | AEK0317$MarkerNumber>127 & AEK0317$MarkerNumber<128)] <- "PostInOutFixation"
+samplecsv$TaskCue [which(samplecsv$MarkerNumber>121 & samplecsv$MarkerNumber<122 | samplecsv$MarkerNumber>122 & samplecsv$MarkerNumber<123 | samplecsv$MarkerNumber>123 & samplecsv$MarkerNumber<124 | samplecsv$MarkerNumber>124 & samplecsv$MarkerNumber<125 | samplecsv$MarkerNumber>125 & samplecsv$MarkerNumber<126 | samplecsv$MarkerNumber>126 & samplecsv$MarkerNumber<127 | samplecsv$MarkerNumber>127 & samplecsv$MarkerNumber<128)] <- "PostInOutFixation"
 
-AEK0317$TaskCue [which(AEK0317$MarkerNumber>137 & AEK0317$MarkerNumber<138 | AEK0317$MarkerNumber>138 & AEK0317$MarkerNumber<139 | AEK0317$MarkerNumber>139 & AEK0317$MarkerNumber<140 | AEK0317$MarkerNumber>140 & AEK0317$MarkerNumber<141 | AEK0317$MarkerNumber>141 & AEK0317$MarkerNumber<142 | AEK0317$MarkerNumber>142 & AEK0317$MarkerNumber<143 | AEK0317$MarkerNumber>143 & AEK0317$MarkerNumber<144)] <- "PostInOutFixation"
+samplecsv$TaskCue [which(samplecsv$MarkerNumber>137 & samplecsv$MarkerNumber<138 | samplecsv$MarkerNumber>138 & samplecsv$MarkerNumber<139 | samplecsv$MarkerNumber>139 & samplecsv$MarkerNumber<140 | samplecsv$MarkerNumber>140 & samplecsv$MarkerNumber<141 | samplecsv$MarkerNumber>141 & samplecsv$MarkerNumber<142 | samplecsv$MarkerNumber>142 & samplecsv$MarkerNumber<143 | samplecsv$MarkerNumber>143 & samplecsv$MarkerNumber<144)] <- "PostInOutFixation"
 
-AEK0317$TaskCue [which(AEK0317$MarkerNumber>161 & AEK0317$MarkerNumber<162 | AEK0317$MarkerNumber>162 & AEK0317$MarkerNumber<163 | AEK0317$MarkerNumber>163 & AEK0317$MarkerNumber<164 | AEK0317$MarkerNumber>164 & AEK0317$MarkerNumber<165 | AEK0317$MarkerNumber>165 & AEK0317$MarkerNumber<166 | AEK0317$MarkerNumber>166 & AEK0317$MarkerNumber<167 | AEK0317$MarkerNumber>167 & AEK0317$MarkerNumber<168)] <- "PostInOutFixation"
+samplecsv$TaskCue [which(samplecsv$MarkerNumber>161 & samplecsv$MarkerNumber<162 | samplecsv$MarkerNumber>162 & samplecsv$MarkerNumber<163 | samplecsv$MarkerNumber>163 & samplecsv$MarkerNumber<164 | samplecsv$MarkerNumber>164 & samplecsv$MarkerNumber<165 | samplecsv$MarkerNumber>165 & samplecsv$MarkerNumber<166 | samplecsv$MarkerNumber>166 & samplecsv$MarkerNumber<167 | samplecsv$MarkerNumber>167 & samplecsv$MarkerNumber<168)] <- "PostInOutFixation"
 
-AEK0317$TaskCue [which(AEK0317$MarkerNumber>185 & AEK0317$MarkerNumber<186 | AEK0317$MarkerNumber>186 & AEK0317$MarkerNumber<187 | AEK0317$MarkerNumber>187 & AEK0317$MarkerNumber<188 | AEK0317$MarkerNumber>188 & AEK0317$MarkerNumber<189 | AEK0317$MarkerNumber>189 & AEK0317$MarkerNumber<190 | AEK0317$MarkerNumber>190 & AEK0317$MarkerNumber<191 | AEK0317$MarkerNumber>191 & AEK0317$MarkerNumber<192)] <- 'PostInOutFixation'
+samplecsv$TaskCue [which(samplecsv$MarkerNumber>185 & samplecsv$MarkerNumber<186 | samplecsv$MarkerNumber>186 & samplecsv$MarkerNumber<187 | samplecsv$MarkerNumber>187 & samplecsv$MarkerNumber<188 | samplecsv$MarkerNumber>188 & samplecsv$MarkerNumber<189 | samplecsv$MarkerNumber>189 & samplecsv$MarkerNumber<190 | samplecsv$MarkerNumber>190 & samplecsv$MarkerNumber<191 | samplecsv$MarkerNumber>191 & samplecsv$MarkerNumber<192)] <- 'PostInOutFixation'
 
 #POST LIKEDISLIKE FIXATION
-AEK0317$TaskCue [which(AEK0317$MarkerNumber>17 & AEK0317$MarkerNumber<18 | AEK0317$MarkerNumber>18 & AEK0317$MarkerNumber<19 | AEK0317$MarkerNumber>19 & AEK0317$MarkerNumber<20 | AEK0317$MarkerNumber>20 & AEK0317$MarkerNumber<21 | AEK0317$MarkerNumber>21 & AEK0317$MarkerNumber<22 | AEK0317$MarkerNumber>22 & AEK0317$MarkerNumber<23 | AEK0317$MarkerNumber>23 & AEK0317$MarkerNumber<24)] <- 'PostLikeDislikeFixation'
+samplecsv$TaskCue [which(samplecsv$MarkerNumber>17 & samplecsv$MarkerNumber<18 | samplecsv$MarkerNumber>18 & samplecsv$MarkerNumber<19 | samplecsv$MarkerNumber>19 & samplecsv$MarkerNumber<20 | samplecsv$MarkerNumber>20 & samplecsv$MarkerNumber<21 | samplecsv$MarkerNumber>21 & samplecsv$MarkerNumber<22 | samplecsv$MarkerNumber>22 & samplecsv$MarkerNumber<23 | samplecsv$MarkerNumber>23 & samplecsv$MarkerNumber<24)] <- 'PostLikeDislikeFixation'
 
-AEK0317$TaskCue [which(AEK0317$MarkerNumber>41 & AEK0317$MarkerNumber<42 | AEK0317$MarkerNumber>42 & AEK0317$MarkerNumber<43 | AEK0317$MarkerNumber>43 & AEK0317$MarkerNumber<44 | AEK0317$MarkerNumber>44 & AEK0317$MarkerNumber<45 | AEK0317$MarkerNumber>45 & AEK0317$MarkerNumber<46 | AEK0317$MarkerNumber>46 & AEK0317$MarkerNumber<47 | AEK0317$MarkerNumber>47 & AEK0317$MarkerNumber<48)] <- 'PostLikeDislikeFixation'
+samplecsv$TaskCue [which(samplecsv$MarkerNumber>41 & samplecsv$MarkerNumber<42 | samplecsv$MarkerNumber>42 & samplecsv$MarkerNumber<43 | samplecsv$MarkerNumber>43 & samplecsv$MarkerNumber<44 | samplecsv$MarkerNumber>44 & samplecsv$MarkerNumber<45 | samplecsv$MarkerNumber>45 & samplecsv$MarkerNumber<46 | samplecsv$MarkerNumber>46 & samplecsv$MarkerNumber<47 | samplecsv$MarkerNumber>47 & samplecsv$MarkerNumber<48)] <- 'PostLikeDislikeFixation'
 
-AEK0317$TaskCue [which(AEK0317$MarkerNumber>57 & AEK0317$MarkerNumber<58 | AEK0317$MarkerNumber>58 & AEK0317$MarkerNumber<59 | AEK0317$MarkerNumber>59 & AEK0317$MarkerNumber<60 | AEK0317$MarkerNumber>60 & AEK0317$MarkerNumber<61 | AEK0317$MarkerNumber>61 & AEK0317$MarkerNumber<62 | AEK0317$MarkerNumber>62 & AEK0317$MarkerNumber<63 | AEK0317$MarkerNumber>63 & AEK0317$MarkerNumber<64)] <- 'PostLikeDislikeFixation'
+samplecsv$TaskCue [which(samplecsv$MarkerNumber>57 & samplecsv$MarkerNumber<58 | samplecsv$MarkerNumber>58 & samplecsv$MarkerNumber<59 | samplecsv$MarkerNumber>59 & samplecsv$MarkerNumber<60 | samplecsv$MarkerNumber>60 & samplecsv$MarkerNumber<61 | samplecsv$MarkerNumber>61 & samplecsv$MarkerNumber<62 | samplecsv$MarkerNumber>62 & samplecsv$MarkerNumber<63 | samplecsv$MarkerNumber>63 & samplecsv$MarkerNumber<64)] <- 'PostLikeDislikeFixation'
 
-AEK0317$TaskCue [which(AEK0317$MarkerNumber>105 & AEK0317$MarkerNumber<106 | AEK0317$MarkerNumber>106 & AEK0317$MarkerNumber<107 | AEK0317$MarkerNumber>107 & AEK0317$MarkerNumber<108 | AEK0317$MarkerNumber>108 & AEK0317$MarkerNumber<109 | AEK0317$MarkerNumber>109 & AEK0317$MarkerNumber<110 | AEK0317$MarkerNumber>110 & AEK0317$MarkerNumber<111 | AEK0317$MarkerNumber>111 & AEK0317$MarkerNumber<112)] <- 'PostLikeDislikeFixation'
+samplecsv$TaskCue [which(samplecsv$MarkerNumber>105 & samplecsv$MarkerNumber<106 | samplecsv$MarkerNumber>106 & samplecsv$MarkerNumber<107 | samplecsv$MarkerNumber>107 & samplecsv$MarkerNumber<108 | samplecsv$MarkerNumber>108 & samplecsv$MarkerNumber<109 | samplecsv$MarkerNumber>109 & samplecsv$MarkerNumber<110 | samplecsv$MarkerNumber>110 & samplecsv$MarkerNumber<111 | samplecsv$MarkerNumber>111 & samplecsv$MarkerNumber<112)] <- 'PostLikeDislikeFixation'
 
-AEK0317$TaskCue [which(AEK0317$MarkerNumber>129 & AEK0317$MarkerNumber<130 | AEK0317$MarkerNumber>130 & AEK0317$MarkerNumber<131 | AEK0317$MarkerNumber>131 & AEK0317$MarkerNumber<132 | AEK0317$MarkerNumber>132 & AEK0317$MarkerNumber<133 | AEK0317$MarkerNumber>133 & AEK0317$MarkerNumber<134 | AEK0317$MarkerNumber>134 & AEK0317$MarkerNumber<135 | AEK0317$MarkerNumber>135 & AEK0317$MarkerNumber<136)] <- 'PostLikeDislikeFixation'
+samplecsv$TaskCue [which(samplecsv$MarkerNumber>129 & samplecsv$MarkerNumber<130 | samplecsv$MarkerNumber>130 & samplecsv$MarkerNumber<131 | samplecsv$MarkerNumber>131 & samplecsv$MarkerNumber<132 | samplecsv$MarkerNumber>132 & samplecsv$MarkerNumber<133 | samplecsv$MarkerNumber>133 & samplecsv$MarkerNumber<134 | samplecsv$MarkerNumber>134 & samplecsv$MarkerNumber<135 | samplecsv$MarkerNumber>135 & samplecsv$MarkerNumber<136)] <- 'PostLikeDislikeFixation'
 
-AEK0317$TaskCue [which(AEK0317$MarkerNumber>145 & AEK0317$MarkerNumber<146 | AEK0317$MarkerNumber>146 & AEK0317$MarkerNumber<147 | AEK0317$MarkerNumber>147 & AEK0317$MarkerNumber<148 | AEK0317$MarkerNumber>148 & AEK0317$MarkerNumber<149 | AEK0317$MarkerNumber>149 & AEK0317$MarkerNumber<150 | AEK0317$MarkerNumber>150 & AEK0317$MarkerNumber<151 | AEK0317$MarkerNumber>151 & AEK0317$MarkerNumber<152)] <- 'PostLikeDislikeFixation'
+samplecsv$TaskCue [which(samplecsv$MarkerNumber>145 & samplecsv$MarkerNumber<146 | samplecsv$MarkerNumber>146 & samplecsv$MarkerNumber<147 | samplecsv$MarkerNumber>147 & samplecsv$MarkerNumber<148 | samplecsv$MarkerNumber>148 & samplecsv$MarkerNumber<149 | samplecsv$MarkerNumber>149 & samplecsv$MarkerNumber<150 | samplecsv$MarkerNumber>150 & samplecsv$MarkerNumber<151 | samplecsv$MarkerNumber>151 & samplecsv$MarkerNumber<152)] <- 'PostLikeDislikeFixation'
 
-AEK0317$TaskCue [which(AEK0317$MarkerNumber>177 & AEK0317$MarkerNumber<178 | AEK0317$MarkerNumber>178 & AEK0317$MarkerNumber<179 | AEK0317$MarkerNumber>179 & AEK0317$MarkerNumber<180 | AEK0317$MarkerNumber>180 & AEK0317$MarkerNumber<181 | AEK0317$MarkerNumber>181 & AEK0317$MarkerNumber<182 | AEK0317$MarkerNumber>182 & AEK0317$MarkerNumber<183 | AEK0317$MarkerNumber>183 & AEK0317$MarkerNumber<184)] <- 'PostLikeDislikeFixation'
+samplecsv$TaskCue [which(samplecsv$MarkerNumber>177 & samplecsv$MarkerNumber<178 | samplecsv$MarkerNumber>178 & samplecsv$MarkerNumber<179 | samplecsv$MarkerNumber>179 & samplecsv$MarkerNumber<180 | samplecsv$MarkerNumber>180 & samplecsv$MarkerNumber<181 | samplecsv$MarkerNumber>181 & samplecsv$MarkerNumber<182 | samplecsv$MarkerNumber>182 & samplecsv$MarkerNumber<183 | samplecsv$MarkerNumber>183 & samplecsv$MarkerNumber<184)] <- 'PostLikeDislikeFixation'
 
-AEK0317$TaskCue [which(AEK0317$MarkerNumber>193 & AEK0317$MarkerNumber<194 | AEK0317$MarkerNumber>194 & AEK0317$MarkerNumber<195 | AEK0317$MarkerNumber>195 & AEK0317$MarkerNumber<196 | AEK0317$MarkerNumber>196 & AEK0317$MarkerNumber<197 | AEK0317$MarkerNumber>197 & AEK0317$MarkerNumber<198 | AEK0317$MarkerNumber>198 & AEK0317$MarkerNumber<199 | AEK0317$MarkerNumber>200 & AEK0317$MarkerNumber<200)] <- 'PostLikeDislikeFixation'
+samplecsv$TaskCue [which(samplecsv$MarkerNumber>193 & samplecsv$MarkerNumber<194 | samplecsv$MarkerNumber>194 & samplecsv$MarkerNumber<195 | samplecsv$MarkerNumber>195 & samplecsv$MarkerNumber<196 | samplecsv$MarkerNumber>196 & samplecsv$MarkerNumber<197 | samplecsv$MarkerNumber>197 & samplecsv$MarkerNumber<198 | samplecsv$MarkerNumber>198 & samplecsv$MarkerNumber<199 | samplecsv$MarkerNumber>200 & samplecsv$MarkerNumber<200)] <- 'PostLikeDislikeFixation'
 
 
 #POST MALEFEMALE FIXATION
-AEK0317$TaskCue [which(AEK0317$MarkerNumber>33 & AEK0317$MarkerNumber<34 | AEK0317$MarkerNumber>34 & AEK0317$MarkerNumber<35 | AEK0317$MarkerNumber>35 & AEK0317$MarkerNumber<36 | AEK0317$MarkerNumber>36 & AEK0317$MarkerNumber<37 | AEK0317$MarkerNumber>37 & AEK0317$MarkerNumber<38 | AEK0317$MarkerNumber>38 & AEK0317$MarkerNumber<39 | AEK0317$MarkerNumber>39 & AEK0317$MarkerNumber<40)] <- 'PostMaleFemaleFixation'
+samplecsv$TaskCue [which(samplecsv$MarkerNumber>33 & samplecsv$MarkerNumber<34 | samplecsv$MarkerNumber>34 & samplecsv$MarkerNumber<35 | samplecsv$MarkerNumber>35 & samplecsv$MarkerNumber<36 | samplecsv$MarkerNumber>36 & samplecsv$MarkerNumber<37 | samplecsv$MarkerNumber>37 & samplecsv$MarkerNumber<38 | samplecsv$MarkerNumber>38 & samplecsv$MarkerNumber<39 | samplecsv$MarkerNumber>39 & samplecsv$MarkerNumber<40)] <- 'PostMaleFemaleFixation'
 
-AEK0317$TaskCue [which(AEK0317$MarkerNumber>49 & AEK0317$MarkerNumber<50 | AEK0317$MarkerNumber>50 & AEK0317$MarkerNumber<51 | AEK0317$MarkerNumber>51 & AEK0317$MarkerNumber<52 | AEK0317$MarkerNumber>52 & AEK0317$MarkerNumber<53 | AEK0317$MarkerNumber>53 & AEK0317$MarkerNumber<54 | AEK0317$MarkerNumber>54 & AEK0317$MarkerNumber<55 | AEK0317$MarkerNumber>55 & AEK0317$MarkerNumber<56)] <- 'PostMaleFemaleFixation'
+samplecsv$TaskCue [which(samplecsv$MarkerNumber>49 & samplecsv$MarkerNumber<50 | samplecsv$MarkerNumber>50 & samplecsv$MarkerNumber<51 | samplecsv$MarkerNumber>51 & samplecsv$MarkerNumber<52 | samplecsv$MarkerNumber>52 & samplecsv$MarkerNumber<53 | samplecsv$MarkerNumber>53 & samplecsv$MarkerNumber<54 | samplecsv$MarkerNumber>54 & samplecsv$MarkerNumber<55 | samplecsv$MarkerNumber>55 & samplecsv$MarkerNumber<56)] <- 'PostMaleFemaleFixation'
 
-AEK0317$TaskCue [which(AEK0317$MarkerNumber>65 & AEK0317$MarkerNumber<66 | AEK0317$MarkerNumber>66 & AEK0317$MarkerNumber<67 | AEK0317$MarkerNumber>67 & AEK0317$MarkerNumber<68 | AEK0317$MarkerNumber>68 & AEK0317$MarkerNumber<69 | AEK0317$MarkerNumber>69 & AEK0317$MarkerNumber<70 | AEK0317$MarkerNumber>70 & AEK0317$MarkerNumber<71 | AEK0317$MarkerNumber>71 & AEK0317$MarkerNumber<72)] <- 'PostMaleFemaleFixation'
+samplecsv$TaskCue [which(samplecsv$MarkerNumber>65 & samplecsv$MarkerNumber<66 | samplecsv$MarkerNumber>66 & samplecsv$MarkerNumber<67 | samplecsv$MarkerNumber>67 & samplecsv$MarkerNumber<68 | samplecsv$MarkerNumber>68 & samplecsv$MarkerNumber<69 | samplecsv$MarkerNumber>69 & samplecsv$MarkerNumber<70 | samplecsv$MarkerNumber>70 & samplecsv$MarkerNumber<71 | samplecsv$MarkerNumber>71 & samplecsv$MarkerNumber<72)] <- 'PostMaleFemaleFixation'
 
-AEK0317$TaskCue [which(AEK0317$MarkerNumber>81 & AEK0317$MarkerNumber<82 | AEK0317$MarkerNumber>82 & AEK0317$MarkerNumber<83 | AEK0317$MarkerNumber>83 & AEK0317$MarkerNumber<84 | AEK0317$MarkerNumber>84 & AEK0317$MarkerNumber<85 | AEK0317$MarkerNumber>85 & AEK0317$MarkerNumber<86 | AEK0317$MarkerNumber>86 & AEK0317$MarkerNumber<87 | AEK0317$MarkerNumber>87 & AEK0317$MarkerNumber<88)] <- 'PostMaleFemaleFixation'
+samplecsv$TaskCue [which(samplecsv$MarkerNumber>81 & samplecsv$MarkerNumber<82 | samplecsv$MarkerNumber>82 & samplecsv$MarkerNumber<83 | samplecsv$MarkerNumber>83 & samplecsv$MarkerNumber<84 | samplecsv$MarkerNumber>84 & samplecsv$MarkerNumber<85 | samplecsv$MarkerNumber>85 & samplecsv$MarkerNumber<86 | samplecsv$MarkerNumber>86 & samplecsv$MarkerNumber<87 | samplecsv$MarkerNumber>87 & samplecsv$MarkerNumber<88)] <- 'PostMaleFemaleFixation'
 
-AEK0317$TaskCue [which(AEK0317$MarkerNumber>97 & AEK0317$MarkerNumber<98 | AEK0317$MarkerNumber>98 & AEK0317$MarkerNumber<99 | AEK0317$MarkerNumber>99 & AEK0317$MarkerNumber<100 | AEK0317$MarkerNumber>100 & AEK0317$MarkerNumber<101 | AEK0317$MarkerNumber>101 & AEK0317$MarkerNumber<102 | AEK0317$MarkerNumber>102 & AEK0317$MarkerNumber<103 | AEK0317$MarkerNumber>103 & AEK0317$MarkerNumber<104)] <- 'PostMaleFemaleFixation'
+samplecsv$TaskCue [which(samplecsv$MarkerNumber>97 & samplecsv$MarkerNumber<98 | samplecsv$MarkerNumber>98 & samplecsv$MarkerNumber<99 | samplecsv$MarkerNumber>99 & samplecsv$MarkerNumber<100 | samplecsv$MarkerNumber>100 & samplecsv$MarkerNumber<101 | samplecsv$MarkerNumber>101 & samplecsv$MarkerNumber<102 | samplecsv$MarkerNumber>102 & samplecsv$MarkerNumber<103 | samplecsv$MarkerNumber>103 & samplecsv$MarkerNumber<104)] <- 'PostMaleFemaleFixation'
 
-AEK0317$TaskCue [which(AEK0317$MarkerNumber>113 & AEK0317$MarkerNumber<114 | AEK0317$MarkerNumber>114 & AEK0317$MarkerNumber<115 | AEK0317$MarkerNumber>115 & AEK0317$MarkerNumber<116 | AEK0317$MarkerNumber>116 & AEK0317$MarkerNumber<117 | AEK0317$MarkerNumber>117 & AEK0317$MarkerNumber<118 | AEK0317$MarkerNumber>118 & AEK0317$MarkerNumber<119 | AEK0317$MarkerNumber>119 & AEK0317$MarkerNumber<120)] <- 'PostMaleFemaleFixation'
+samplecsv$TaskCue [which(samplecsv$MarkerNumber>113 & samplecsv$MarkerNumber<114 | samplecsv$MarkerNumber>114 & samplecsv$MarkerNumber<115 | samplecsv$MarkerNumber>115 & samplecsv$MarkerNumber<116 | samplecsv$MarkerNumber>116 & samplecsv$MarkerNumber<117 | samplecsv$MarkerNumber>117 & samplecsv$MarkerNumber<118 | samplecsv$MarkerNumber>118 & samplecsv$MarkerNumber<119 | samplecsv$MarkerNumber>119 & samplecsv$MarkerNumber<120)] <- 'PostMaleFemaleFixation'
 
-AEK0317$TaskCue [which(AEK0317$MarkerNumber>153 & AEK0317$MarkerNumber<154 | AEK0317$MarkerNumber>154 & AEK0317$MarkerNumber<155 | AEK0317$MarkerNumber>155 & AEK0317$MarkerNumber<156 | AEK0317$MarkerNumber>156 & AEK0317$MarkerNumber<157 | AEK0317$MarkerNumber>157 & AEK0317$MarkerNumber<158 | AEK0317$MarkerNumber>158 & AEK0317$MarkerNumber<159 | AEK0317$MarkerNumber>159 & AEK0317$MarkerNumber<160)] <- 'PostMaleFemaleFixation'
+samplecsv$TaskCue [which(samplecsv$MarkerNumber>153 & samplecsv$MarkerNumber<154 | samplecsv$MarkerNumber>154 & samplecsv$MarkerNumber<155 | samplecsv$MarkerNumber>155 & samplecsv$MarkerNumber<156 | samplecsv$MarkerNumber>156 & samplecsv$MarkerNumber<157 | samplecsv$MarkerNumber>157 & samplecsv$MarkerNumber<158 | samplecsv$MarkerNumber>158 & samplecsv$MarkerNumber<159 | samplecsv$MarkerNumber>159 & samplecsv$MarkerNumber<160)] <- 'PostMaleFemaleFixation'
 
-AEK0317$TaskCue [which(AEK0317$MarkerNumber>169 & AEK0317$MarkerNumber<170 | AEK0317$MarkerNumber>170 & AEK0317$MarkerNumber<171 | AEK0317$MarkerNumber>171 & AEK0317$MarkerNumber<172 | AEK0317$MarkerNumber>172 & AEK0317$MarkerNumber<173 | AEK0317$MarkerNumber>173 & AEK0317$MarkerNumber<174 | AEK0317$MarkerNumber>174 & AEK0317$MarkerNumber<175 | AEK0317$MarkerNumber>175 & AEK0317$MarkerNumber<176)] <- 'PostMaleFemaleFixation'
+samplecsv$TaskCue [which(samplecsv$MarkerNumber>169 & samplecsv$MarkerNumber<170 | samplecsv$MarkerNumber>170 & samplecsv$MarkerNumber<171 | samplecsv$MarkerNumber>171 & samplecsv$MarkerNumber<172 | samplecsv$MarkerNumber>172 & samplecsv$MarkerNumber<173 | samplecsv$MarkerNumber>173 & samplecsv$MarkerNumber<174 | samplecsv$MarkerNumber>174 & samplecsv$MarkerNumber<175 | samplecsv$MarkerNumber>175 & samplecsv$MarkerNumber<176)] <- 'PostMaleFemaleFixation'
 
 
 
 #POST FEAR FIXATION
 
-AEK0317$ValenceType [which(AEK0317$MarkerNumber>1 & AEK0317$MarkerNumber<2 | AEK0317$MarkerNumber>2 & AEK0317$MarkerNumber<3 | AEK0317$MarkerNumber>3 & AEK0317$MarkerNumber<4 | AEK0317$MarkerNumber>4 & AEK0317$MarkerNumber<5 | AEK0317$MarkerNumber>5 & AEK0317$MarkerNumber<6 | AEK0317$MarkerNumber>6 & AEK0317$MarkerNumber<7 | AEK0317$MarkerNumber>7 & AEK0317$MarkerNumber<8)] <- 'PostFearFixation'
+samplecsv$ValenceType [which(samplecsv$MarkerNumber>1 & samplecsv$MarkerNumber<2 | samplecsv$MarkerNumber>2 & samplecsv$MarkerNumber<3 | samplecsv$MarkerNumber>3 & samplecsv$MarkerNumber<4 | samplecsv$MarkerNumber>4 & samplecsv$MarkerNumber<5 | samplecsv$MarkerNumber>5 & samplecsv$MarkerNumber<6 | samplecsv$MarkerNumber>6 & samplecsv$MarkerNumber<7 | samplecsv$MarkerNumber>7 & samplecsv$MarkerNumber<8)] <- 'PostFearFixation'
 
-AEK0317$ValenceType [which(AEK0317$MarkerNumber>9 & AEK0317$MarkerNumber<10 | AEK0317$MarkerNumber>10 & AEK0317$MarkerNumber<11 | AEK0317$MarkerNumber>11 & AEK0317$MarkerNumber<12 | AEK0317$MarkerNumber>12 & AEK0317$MarkerNumber<13 | AEK0317$MarkerNumber>13 & AEK0317$MarkerNumber<14 | AEK0317$MarkerNumber>14 & AEK0317$MarkerNumber<15 | AEK0317$MarkerNumber>15 & AEK0317$MarkerNumber<16)] <- 'PostFearFixation'
+samplecsv$ValenceType [which(samplecsv$MarkerNumber>9 & samplecsv$MarkerNumber<10 | samplecsv$MarkerNumber>10 & samplecsv$MarkerNumber<11 | samplecsv$MarkerNumber>11 & samplecsv$MarkerNumber<12 | samplecsv$MarkerNumber>12 & samplecsv$MarkerNumber<13 | samplecsv$MarkerNumber>13 & samplecsv$MarkerNumber<14 | samplecsv$MarkerNumber>14 & samplecsv$MarkerNumber<15 | samplecsv$MarkerNumber>15 & samplecsv$MarkerNumber<16)] <- 'PostFearFixation'
 
 
-AEK0317$ValenceType [which(AEK0317$MarkerNumber>33 & AEK0317$MarkerNumber<34 | AEK0317$MarkerNumber>34 & AEK0317$MarkerNumber<35 | AEK0317$MarkerNumber>35 & AEK0317$MarkerNumber<36 | AEK0317$MarkerNumber>36 & AEK0317$MarkerNumber<37 | AEK0317$MarkerNumber>37 & AEK0317$MarkerNumber<38 | AEK0317$MarkerNumber>38 & AEK0317$MarkerNumber<39 | AEK0317$MarkerNumber>39 & AEK0317$MarkerNumber<40)] <- 'PostFearFixation'
+samplecsv$ValenceType [which(samplecsv$MarkerNumber>33 & samplecsv$MarkerNumber<34 | samplecsv$MarkerNumber>34 & samplecsv$MarkerNumber<35 | samplecsv$MarkerNumber>35 & samplecsv$MarkerNumber<36 | samplecsv$MarkerNumber>36 & samplecsv$MarkerNumber<37 | samplecsv$MarkerNumber>37 & samplecsv$MarkerNumber<38 | samplecsv$MarkerNumber>38 & samplecsv$MarkerNumber<39 | samplecsv$MarkerNumber>39 & samplecsv$MarkerNumber<40)] <- 'PostFearFixation'
 
-AEK0317$ValenceType [which(AEK0317$MarkerNumber>41 & AEK0317$MarkerNumber<42 | AEK0317$MarkerNumber>42 & AEK0317$MarkerNumber<43 | AEK0317$MarkerNumber>43 & AEK0317$MarkerNumber<44 | AEK0317$MarkerNumber>44 & AEK0317$MarkerNumber<45 | AEK0317$MarkerNumber>45 & AEK0317$MarkerNumber<46 | AEK0317$MarkerNumber>46 & AEK0317$MarkerNumber<47 | AEK0317$MarkerNumber>47 & AEK0317$MarkerNumber<48)] <- 'PostFearFixation'
+samplecsv$ValenceType [which(samplecsv$MarkerNumber>41 & samplecsv$MarkerNumber<42 | samplecsv$MarkerNumber>42 & samplecsv$MarkerNumber<43 | samplecsv$MarkerNumber>43 & samplecsv$MarkerNumber<44 | samplecsv$MarkerNumber>44 & samplecsv$MarkerNumber<45 | samplecsv$MarkerNumber>45 & samplecsv$MarkerNumber<46 | samplecsv$MarkerNumber>46 & samplecsv$MarkerNumber<47 | samplecsv$MarkerNumber>47 & samplecsv$MarkerNumber<48)] <- 'PostFearFixation'
 
-AEK0317$ValenceType [which(AEK0317$MarkerNumber>73 & AEK0317$MarkerNumber<74 | AEK0317$MarkerNumber>74 & AEK0317$MarkerNumber<75 | AEK0317$MarkerNumber>75 & AEK0317$MarkerNumber<76 | AEK0317$MarkerNumber>76 & AEK0317$MarkerNumber<77 | AEK0317$MarkerNumber>77 & AEK0317$MarkerNumber<78 | AEK0317$MarkerNumber>78 & AEK0317$MarkerNumber<79 | AEK0317$MarkerNumber>79 & AEK0317$MarkerNumber<80)] <- 'PostFearFixation'
+samplecsv$ValenceType [which(samplecsv$MarkerNumber>73 & samplecsv$MarkerNumber<74 | samplecsv$MarkerNumber>74 & samplecsv$MarkerNumber<75 | samplecsv$MarkerNumber>75 & samplecsv$MarkerNumber<76 | samplecsv$MarkerNumber>76 & samplecsv$MarkerNumber<77 | samplecsv$MarkerNumber>77 & samplecsv$MarkerNumber<78 | samplecsv$MarkerNumber>78 & samplecsv$MarkerNumber<79 | samplecsv$MarkerNumber>79 & samplecsv$MarkerNumber<80)] <- 'PostFearFixation'
 
-AEK0317$ValenceType [which(AEK0317$MarkerNumber>97 & AEK0317$MarkerNumber<98 | AEK0317$MarkerNumber>98 & AEK0317$MarkerNumber<99 | AEK0317$MarkerNumber>99 & AEK0317$MarkerNumber<100 | AEK0317$MarkerNumber>100 & AEK0317$MarkerNumber<101 | AEK0317$MarkerNumber>101 & AEK0317$MarkerNumber<102 | AEK0317$MarkerNumber>102 & AEK0317$MarkerNumber<103 | AEK0317$MarkerNumber>103 & AEK0317$MarkerNumber<104)] <- 'PostFearFixation'
+samplecsv$ValenceType [which(samplecsv$MarkerNumber>97 & samplecsv$MarkerNumber<98 | samplecsv$MarkerNumber>98 & samplecsv$MarkerNumber<99 | samplecsv$MarkerNumber>99 & samplecsv$MarkerNumber<100 | samplecsv$MarkerNumber>100 & samplecsv$MarkerNumber<101 | samplecsv$MarkerNumber>101 & samplecsv$MarkerNumber<102 | samplecsv$MarkerNumber>102 & samplecsv$MarkerNumber<103 | samplecsv$MarkerNumber>103 & samplecsv$MarkerNumber<104)] <- 'PostFearFixation'
 
-AEK0317$ValenceType [which(AEK0317$MarkerNumber>113 & AEK0317$MarkerNumber<114 | AEK0317$MarkerNumber>114 & AEK0317$MarkerNumber<115 | AEK0317$MarkerNumber>115 & AEK0317$MarkerNumber<116 | AEK0317$MarkerNumber>116 & AEK0317$MarkerNumber<117 | AEK0317$MarkerNumber>117 & AEK0317$MarkerNumber<118 | AEK0317$MarkerNumber>118 & AEK0317$MarkerNumber<119 | AEK0317$MarkerNumber>119 & AEK0317$MarkerNumber<120)] <- 'PostFearFixation'
+samplecsv$ValenceType [which(samplecsv$MarkerNumber>113 & samplecsv$MarkerNumber<114 | samplecsv$MarkerNumber>114 & samplecsv$MarkerNumber<115 | samplecsv$MarkerNumber>115 & samplecsv$MarkerNumber<116 | samplecsv$MarkerNumber>116 & samplecsv$MarkerNumber<117 | samplecsv$MarkerNumber>117 & samplecsv$MarkerNumber<118 | samplecsv$MarkerNumber>118 & samplecsv$MarkerNumber<119 | samplecsv$MarkerNumber>119 & samplecsv$MarkerNumber<120)] <- 'PostFearFixation'
 
-AEK0317$ValenceType [which(AEK0317$MarkerNumber>121 & AEK0317$MarkerNumber<122 | AEK0317$MarkerNumber>122 & AEK0317$MarkerNumber<123 | AEK0317$MarkerNumber>123 & AEK0317$MarkerNumber<124 | AEK0317$MarkerNumber>124 & AEK0317$MarkerNumber<125 | AEK0317$MarkerNumber>125 & AEK0317$MarkerNumber<126 | AEK0317$MarkerNumber>126 & AEK0317$MarkerNumber<127 | AEK0317$MarkerNumber>127 & AEK0317$MarkerNumber<128)] <- 'PostFearFixation'
+samplecsv$ValenceType [which(samplecsv$MarkerNumber>121 & samplecsv$MarkerNumber<122 | samplecsv$MarkerNumber>122 & samplecsv$MarkerNumber<123 | samplecsv$MarkerNumber>123 & samplecsv$MarkerNumber<124 | samplecsv$MarkerNumber>124 & samplecsv$MarkerNumber<125 | samplecsv$MarkerNumber>125 & samplecsv$MarkerNumber<126 | samplecsv$MarkerNumber>126 & samplecsv$MarkerNumber<127 | samplecsv$MarkerNumber>127 & samplecsv$MarkerNumber<128)] <- 'PostFearFixation'
 
-AEK0317$ValenceType [which(AEK0317$MarkerNumber>145 & AEK0317$MarkerNumber<146 | AEK0317$MarkerNumber>146 & AEK0317$MarkerNumber<147 | AEK0317$MarkerNumber>147 & AEK0317$MarkerNumber<148 | AEK0317$MarkerNumber>148 & AEK0317$MarkerNumber<149 | AEK0317$MarkerNumber>149 & AEK0317$MarkerNumber<150 | AEK0317$MarkerNumber>150 & AEK0317$MarkerNumber<151 | AEK0317$MarkerNumber>151 & AEK0317$MarkerNumber<152)] <- 'PostFearFixation'
+samplecsv$ValenceType [which(samplecsv$MarkerNumber>145 & samplecsv$MarkerNumber<146 | samplecsv$MarkerNumber>146 & samplecsv$MarkerNumber<147 | samplecsv$MarkerNumber>147 & samplecsv$MarkerNumber<148 | samplecsv$MarkerNumber>148 & samplecsv$MarkerNumber<149 | samplecsv$MarkerNumber>149 & samplecsv$MarkerNumber<150 | samplecsv$MarkerNumber>150 & samplecsv$MarkerNumber<151 | samplecsv$MarkerNumber>151 & samplecsv$MarkerNumber<152)] <- 'PostFearFixation'
 
-AEK0317$ValenceType [which(AEK0317$MarkerNumber>153 & AEK0317$MarkerNumber<154 | AEK0317$MarkerNumber>154 & AEK0317$MarkerNumber<155 | AEK0317$MarkerNumber>155 & AEK0317$MarkerNumber<156 | AEK0317$MarkerNumber>156 & AEK0317$MarkerNumber<157 | AEK0317$MarkerNumber>157 & AEK0317$MarkerNumber<158 | AEK0317$MarkerNumber>158 & AEK0317$MarkerNumber<159 | AEK0317$MarkerNumber>159 & AEK0317$MarkerNumber<160)] <- 'PostFearFixation'
+samplecsv$ValenceType [which(samplecsv$MarkerNumber>153 & samplecsv$MarkerNumber<154 | samplecsv$MarkerNumber>154 & samplecsv$MarkerNumber<155 | samplecsv$MarkerNumber>155 & samplecsv$MarkerNumber<156 | samplecsv$MarkerNumber>156 & samplecsv$MarkerNumber<157 | samplecsv$MarkerNumber>157 & samplecsv$MarkerNumber<158 | samplecsv$MarkerNumber>158 & samplecsv$MarkerNumber<159 | samplecsv$MarkerNumber>159 & samplecsv$MarkerNumber<160)] <- 'PostFearFixation'
 
-AEK0317$ValenceType [which(AEK0317$MarkerNumber>161 & AEK0317$MarkerNumber<162 | AEK0317$MarkerNumber>162 & AEK0317$MarkerNumber<163 | AEK0317$MarkerNumber>163 & AEK0317$MarkerNumber<164 | AEK0317$MarkerNumber>164 & AEK0317$MarkerNumber<165 | AEK0317$MarkerNumber>165 & AEK0317$MarkerNumber<166 | AEK0317$MarkerNumber>166 & AEK0317$MarkerNumber<167 | AEK0317$MarkerNumber>167 & AEK0317$MarkerNumber<168)] <- "PostFearFixation"
+samplecsv$ValenceType [which(samplecsv$MarkerNumber>161 & samplecsv$MarkerNumber<162 | samplecsv$MarkerNumber>162 & samplecsv$MarkerNumber<163 | samplecsv$MarkerNumber>163 & samplecsv$MarkerNumber<164 | samplecsv$MarkerNumber>164 & samplecsv$MarkerNumber<165 | samplecsv$MarkerNumber>165 & samplecsv$MarkerNumber<166 | samplecsv$MarkerNumber>166 & samplecsv$MarkerNumber<167 | samplecsv$MarkerNumber>167 & samplecsv$MarkerNumber<168)] <- "PostFearFixation"
 
-AEK0317$ValenceType [which(AEK0317$MarkerNumber>177 & AEK0317$MarkerNumber<178 | AEK0317$MarkerNumber>178 & AEK0317$MarkerNumber<179 | AEK0317$MarkerNumber>179 & AEK0317$MarkerNumber<180 | AEK0317$MarkerNumber>180 & AEK0317$MarkerNumber<181 | AEK0317$MarkerNumber>181 & AEK0317$MarkerNumber<182 | AEK0317$MarkerNumber>182 & AEK0317$MarkerNumber<183 | AEK0317$MarkerNumber>183 & AEK0317$MarkerNumber<184)] <- 'PostFearFixation'
+samplecsv$ValenceType [which(samplecsv$MarkerNumber>177 & samplecsv$MarkerNumber<178 | samplecsv$MarkerNumber>178 & samplecsv$MarkerNumber<179 | samplecsv$MarkerNumber>179 & samplecsv$MarkerNumber<180 | samplecsv$MarkerNumber>180 & samplecsv$MarkerNumber<181 | samplecsv$MarkerNumber>181 & samplecsv$MarkerNumber<182 | samplecsv$MarkerNumber>182 & samplecsv$MarkerNumber<183 | samplecsv$MarkerNumber>183 & samplecsv$MarkerNumber<184)] <- 'PostFearFixation'
 
-AEK0317$ValenceType [which(AEK0317$MarkerNumber>193 & AEK0317$MarkerNumber<194 | AEK0317$MarkerNumber>194 & AEK0317$MarkerNumber<195 | AEK0317$MarkerNumber>195 & AEK0317$MarkerNumber<196 | AEK0317$MarkerNumber>196 & AEK0317$MarkerNumber<197 | AEK0317$MarkerNumber>197 & AEK0317$MarkerNumber<198 | AEK0317$MarkerNumber>198 & AEK0317$MarkerNumber<199 | AEK0317$MarkerNumber>200 & AEK0317$MarkerNumber<200)] <- 'PostFearFixation'
+samplecsv$ValenceType [which(samplecsv$MarkerNumber>193 & samplecsv$MarkerNumber<194 | samplecsv$MarkerNumber>194 & samplecsv$MarkerNumber<195 | samplecsv$MarkerNumber>195 & samplecsv$MarkerNumber<196 | samplecsv$MarkerNumber>196 & samplecsv$MarkerNumber<197 | samplecsv$MarkerNumber>197 & samplecsv$MarkerNumber<198 | samplecsv$MarkerNumber>198 & samplecsv$MarkerNumber<199 | samplecsv$MarkerNumber>200 & samplecsv$MarkerNumber<200)] <- 'PostFearFixation'
 
 #POST NEUTRAL FIXATION
-AEK0317$ValenceType [which(AEK0317$MarkerNumber>17 & AEK0317$MarkerNumber<18 | AEK0317$MarkerNumber>18 & AEK0317$MarkerNumber<19 | AEK0317$MarkerNumber>19 & AEK0317$MarkerNumber<20 | AEK0317$MarkerNumber>20 & AEK0317$MarkerNumber<21 | AEK0317$MarkerNumber>21 & AEK0317$MarkerNumber<22 | AEK0317$MarkerNumber>22 & AEK0317$MarkerNumber<23 | AEK0317$MarkerNumber>23 & AEK0317$MarkerNumber<24)] <- 'PostNeutralFixation'
+samplecsv$ValenceType [which(samplecsv$MarkerNumber>17 & samplecsv$MarkerNumber<18 | samplecsv$MarkerNumber>18 & samplecsv$MarkerNumber<19 | samplecsv$MarkerNumber>19 & samplecsv$MarkerNumber<20 | samplecsv$MarkerNumber>20 & samplecsv$MarkerNumber<21 | samplecsv$MarkerNumber>21 & samplecsv$MarkerNumber<22 | samplecsv$MarkerNumber>22 & samplecsv$MarkerNumber<23 | samplecsv$MarkerNumber>23 & samplecsv$MarkerNumber<24)] <- 'PostNeutralFixation'
 
-AEK0317$ValenceType [which(AEK0317$MarkerNumber>25 & AEK0317$MarkerNumber<26 | AEK0317$MarkerNumber>26 & AEK0317$MarkerNumber<27 | AEK0317$MarkerNumber>27 & AEK0317$MarkerNumber<28 | AEK0317$MarkerNumber>28 & AEK0317$MarkerNumber<29 | AEK0317$MarkerNumber>29 & AEK0317$MarkerNumber<30 | AEK0317$MarkerNumber>30 & AEK0317$MarkerNumber<31 | AEK0317$MarkerNumber>31 & AEK0317$MarkerNumber<32)] <- 'PostNeutralFixation'
+samplecsv$ValenceType [which(samplecsv$MarkerNumber>25 & samplecsv$MarkerNumber<26 | samplecsv$MarkerNumber>26 & samplecsv$MarkerNumber<27 | samplecsv$MarkerNumber>27 & samplecsv$MarkerNumber<28 | samplecsv$MarkerNumber>28 & samplecsv$MarkerNumber<29 | samplecsv$MarkerNumber>29 & samplecsv$MarkerNumber<30 | samplecsv$MarkerNumber>30 & samplecsv$MarkerNumber<31 | samplecsv$MarkerNumber>31 & samplecsv$MarkerNumber<32)] <- 'PostNeutralFixation'
 
-AEK0317$ValenceType [which(AEK0317$MarkerNumber>49 & AEK0317$MarkerNumber<50 | AEK0317$MarkerNumber>50 & AEK0317$MarkerNumber<51 | AEK0317$MarkerNumber>51 & AEK0317$MarkerNumber<52 | AEK0317$MarkerNumber>52 & AEK0317$MarkerNumber<53 | AEK0317$MarkerNumber>53 & AEK0317$MarkerNumber<54 | AEK0317$MarkerNumber>54 & AEK0317$MarkerNumber<55 | AEK0317$MarkerNumber>55 & AEK0317$MarkerNumber<56)] <- 'PostNeutralFixation'
+samplecsv$ValenceType [which(samplecsv$MarkerNumber>49 & samplecsv$MarkerNumber<50 | samplecsv$MarkerNumber>50 & samplecsv$MarkerNumber<51 | samplecsv$MarkerNumber>51 & samplecsv$MarkerNumber<52 | samplecsv$MarkerNumber>52 & samplecsv$MarkerNumber<53 | samplecsv$MarkerNumber>53 & samplecsv$MarkerNumber<54 | samplecsv$MarkerNumber>54 & samplecsv$MarkerNumber<55 | samplecsv$MarkerNumber>55 & samplecsv$MarkerNumber<56)] <- 'PostNeutralFixation'
 
-AEK0317$ValenceType [which(AEK0317$MarkerNumber>57 & AEK0317$MarkerNumber<58 | AEK0317$MarkerNumber>58 & AEK0317$MarkerNumber<59 | AEK0317$MarkerNumber>59 & AEK0317$MarkerNumber<60 | AEK0317$MarkerNumber>60 & AEK0317$MarkerNumber<61 | AEK0317$MarkerNumber>61 & AEK0317$MarkerNumber<62 | AEK0317$MarkerNumber>62 & AEK0317$MarkerNumber<63 | AEK0317$MarkerNumber>63 & AEK0317$MarkerNumber<64)] <- 'PostNeutralFixation'
+samplecsv$ValenceType [which(samplecsv$MarkerNumber>57 & samplecsv$MarkerNumber<58 | samplecsv$MarkerNumber>58 & samplecsv$MarkerNumber<59 | samplecsv$MarkerNumber>59 & samplecsv$MarkerNumber<60 | samplecsv$MarkerNumber>60 & samplecsv$MarkerNumber<61 | samplecsv$MarkerNumber>61 & samplecsv$MarkerNumber<62 | samplecsv$MarkerNumber>62 & samplecsv$MarkerNumber<63 | samplecsv$MarkerNumber>63 & samplecsv$MarkerNumber<64)] <- 'PostNeutralFixation'
 
-AEK0317$ValenceType [which(AEK0317$MarkerNumber>65 & AEK0317$MarkerNumber<66 | AEK0317$MarkerNumber>66 & AEK0317$MarkerNumber<67 | AEK0317$MarkerNumber>67 & AEK0317$MarkerNumber<68 | AEK0317$MarkerNumber>68 & AEK0317$MarkerNumber<69 | AEK0317$MarkerNumber>69 & AEK0317$MarkerNumber<70 | AEK0317$MarkerNumber>70 & AEK0317$MarkerNumber<71 | AEK0317$MarkerNumber>71 & AEK0317$MarkerNumber<72)] <- 'PostNeutralFixation'
+samplecsv$ValenceType [which(samplecsv$MarkerNumber>65 & samplecsv$MarkerNumber<66 | samplecsv$MarkerNumber>66 & samplecsv$MarkerNumber<67 | samplecsv$MarkerNumber>67 & samplecsv$MarkerNumber<68 | samplecsv$MarkerNumber>68 & samplecsv$MarkerNumber<69 | samplecsv$MarkerNumber>69 & samplecsv$MarkerNumber<70 | samplecsv$MarkerNumber>70 & samplecsv$MarkerNumber<71 | samplecsv$MarkerNumber>71 & samplecsv$MarkerNumber<72)] <- 'PostNeutralFixation'
 
-AEK0317$ValenceType [which(AEK0317$MarkerNumber>81 & AEK0317$MarkerNumber<82 | AEK0317$MarkerNumber>82 & AEK0317$MarkerNumber<83 | AEK0317$MarkerNumber>83 & AEK0317$MarkerNumber<84 | AEK0317$MarkerNumber>84 & AEK0317$MarkerNumber<85 | AEK0317$MarkerNumber>85 & AEK0317$MarkerNumber<86 | AEK0317$MarkerNumber>86 & AEK0317$MarkerNumber<87 | AEK0317$MarkerNumber>87 & AEK0317$MarkerNumber<88)] <- 'PostNeutralFixation'
+samplecsv$ValenceType [which(samplecsv$MarkerNumber>81 & samplecsv$MarkerNumber<82 | samplecsv$MarkerNumber>82 & samplecsv$MarkerNumber<83 | samplecsv$MarkerNumber>83 & samplecsv$MarkerNumber<84 | samplecsv$MarkerNumber>84 & samplecsv$MarkerNumber<85 | samplecsv$MarkerNumber>85 & samplecsv$MarkerNumber<86 | samplecsv$MarkerNumber>86 & samplecsv$MarkerNumber<87 | samplecsv$MarkerNumber>87 & samplecsv$MarkerNumber<88)] <- 'PostNeutralFixation'
 
-AEK0317$ValenceType [which(AEK0317$MarkerNumber>89 & AEK0317$MarkerNumber<90 | AEK0317$MarkerNumber>90 & AEK0317$MarkerNumber<91 | AEK0317$MarkerNumber>91 & AEK0317$MarkerNumber<92 | AEK0317$MarkerNumber>92 & AEK0317$MarkerNumber<93 | AEK0317$MarkerNumber>93 & AEK0317$MarkerNumber<94 | AEK0317$MarkerNumber>94 & AEK0317$MarkerNumber<95 | AEK0317$MarkerNumber>95 & AEK0317$MarkerNumber<96)] <- 'PostNeutralFixation'
+samplecsv$ValenceType [which(samplecsv$MarkerNumber>89 & samplecsv$MarkerNumber<90 | samplecsv$MarkerNumber>90 & samplecsv$MarkerNumber<91 | samplecsv$MarkerNumber>91 & samplecsv$MarkerNumber<92 | samplecsv$MarkerNumber>92 & samplecsv$MarkerNumber<93 | samplecsv$MarkerNumber>93 & samplecsv$MarkerNumber<94 | samplecsv$MarkerNumber>94 & samplecsv$MarkerNumber<95 | samplecsv$MarkerNumber>95 & samplecsv$MarkerNumber<96)] <- 'PostNeutralFixation'
 
-AEK0317$ValenceType [which(AEK0317$MarkerNumber>105 & AEK0317$MarkerNumber<106 | AEK0317$MarkerNumber>106 & AEK0317$MarkerNumber<107 | AEK0317$MarkerNumber>107 & AEK0317$MarkerNumber<108 | AEK0317$MarkerNumber>108 & AEK0317$MarkerNumber<109 | AEK0317$MarkerNumber>109 & AEK0317$MarkerNumber<110 | AEK0317$MarkerNumber>110 & AEK0317$MarkerNumber<111 | AEK0317$MarkerNumber>111 & AEK0317$MarkerNumber<112)] <- 'PostNeutralFixation'
+samplecsv$ValenceType [which(samplecsv$MarkerNumber>105 & samplecsv$MarkerNumber<106 | samplecsv$MarkerNumber>106 & samplecsv$MarkerNumber<107 | samplecsv$MarkerNumber>107 & samplecsv$MarkerNumber<108 | samplecsv$MarkerNumber>108 & samplecsv$MarkerNumber<109 | samplecsv$MarkerNumber>109 & samplecsv$MarkerNumber<110 | samplecsv$MarkerNumber>110 & samplecsv$MarkerNumber<111 | samplecsv$MarkerNumber>111 & samplecsv$MarkerNumber<112)] <- 'PostNeutralFixation'
 
-AEK0317$ValenceType [which(AEK0317$MarkerNumber>129 & AEK0317$MarkerNumber<130 | AEK0317$MarkerNumber>130 & AEK0317$MarkerNumber<131 | AEK0317$MarkerNumber>131 & AEK0317$MarkerNumber<132 | AEK0317$MarkerNumber>132 & AEK0317$MarkerNumber<133 | AEK0317$MarkerNumber>133 & AEK0317$MarkerNumber<134 | AEK0317$MarkerNumber>134 & AEK0317$MarkerNumber<135 | AEK0317$MarkerNumber>135 & AEK0317$MarkerNumber<136)] <- 'PostNeutralFixation'
+samplecsv$ValenceType [which(samplecsv$MarkerNumber>129 & samplecsv$MarkerNumber<130 | samplecsv$MarkerNumber>130 & samplecsv$MarkerNumber<131 | samplecsv$MarkerNumber>131 & samplecsv$MarkerNumber<132 | samplecsv$MarkerNumber>132 & samplecsv$MarkerNumber<133 | samplecsv$MarkerNumber>133 & samplecsv$MarkerNumber<134 | samplecsv$MarkerNumber>134 & samplecsv$MarkerNumber<135 | samplecsv$MarkerNumber>135 & samplecsv$MarkerNumber<136)] <- 'PostNeutralFixation'
 
-AEK0317$ValenceType [which(AEK0317$MarkerNumber>137 & AEK0317$MarkerNumber<138 | AEK0317$MarkerNumber>138 & AEK0317$MarkerNumber<139 | AEK0317$MarkerNumber>139 & AEK0317$MarkerNumber<140 | AEK0317$MarkerNumber>140 & AEK0317$MarkerNumber<141 | AEK0317$MarkerNumber>141 & AEK0317$MarkerNumber<142 | AEK0317$MarkerNumber>142 & AEK0317$MarkerNumber<143 | AEK0317$MarkerNumber>143 & AEK0317$MarkerNumber<144)] <- 'PostNeutralFixation'
+samplecsv$ValenceType [which(samplecsv$MarkerNumber>137 & samplecsv$MarkerNumber<138 | samplecsv$MarkerNumber>138 & samplecsv$MarkerNumber<139 | samplecsv$MarkerNumber>139 & samplecsv$MarkerNumber<140 | samplecsv$MarkerNumber>140 & samplecsv$MarkerNumber<141 | samplecsv$MarkerNumber>141 & samplecsv$MarkerNumber<142 | samplecsv$MarkerNumber>142 & samplecsv$MarkerNumber<143 | samplecsv$MarkerNumber>143 & samplecsv$MarkerNumber<144)] <- 'PostNeutralFixation'
 
-AEK0317$ValenceType [which(AEK0317$MarkerNumber>169 & AEK0317$MarkerNumber<170 | AEK0317$MarkerNumber>170 & AEK0317$MarkerNumber<171 | AEK0317$MarkerNumber>171 & AEK0317$MarkerNumber<172 | AEK0317$MarkerNumber>172 & AEK0317$MarkerNumber<173 | AEK0317$MarkerNumber>173 & AEK0317$MarkerNumber<174 | AEK0317$MarkerNumber>174 & AEK0317$MarkerNumber<175 | AEK0317$MarkerNumber>175 & AEK0317$MarkerNumber<176)] <- 'PostNeutralFixation'
+samplecsv$ValenceType [which(samplecsv$MarkerNumber>169 & samplecsv$MarkerNumber<170 | samplecsv$MarkerNumber>170 & samplecsv$MarkerNumber<171 | samplecsv$MarkerNumber>171 & samplecsv$MarkerNumber<172 | samplecsv$MarkerNumber>172 & samplecsv$MarkerNumber<173 | samplecsv$MarkerNumber>173 & samplecsv$MarkerNumber<174 | samplecsv$MarkerNumber>174 & samplecsv$MarkerNumber<175 | samplecsv$MarkerNumber>175 & samplecsv$MarkerNumber<176)] <- 'PostNeutralFixation'
 
-AEK0317$ValenceType [which(AEK0317$MarkerNumber>185 & AEK0317$MarkerNumber<186 | AEK0317$MarkerNumber>186 & AEK0317$MarkerNumber<187 | AEK0317$MarkerNumber>187 & AEK0317$MarkerNumber<188 | AEK0317$MarkerNumber>188 & AEK0317$MarkerNumber<189 | AEK0317$MarkerNumber>189 & AEK0317$MarkerNumber<190 | AEK0317$MarkerNumber>190 & AEK0317$MarkerNumber<191 | AEK0317$MarkerNumber>191 & AEK0317$MarkerNumber<192)] <- 'PostNeutralFixation'
+samplecsv$ValenceType [which(samplecsv$MarkerNumber>185 & samplecsv$MarkerNumber<186 | samplecsv$MarkerNumber>186 & samplecsv$MarkerNumber<187 | samplecsv$MarkerNumber>187 & samplecsv$MarkerNumber<188 | samplecsv$MarkerNumber>188 & samplecsv$MarkerNumber<189 | samplecsv$MarkerNumber>189 & samplecsv$MarkerNumber<190 | samplecsv$MarkerNumber>190 & samplecsv$MarkerNumber<191 | samplecsv$MarkerNumber>191 & samplecsv$MarkerNumber<192)] <- 'PostNeutralFixation'
 
 #POST ASIAN FIXATION
-AEK0317$FaceType [which(AEK0317$MarkerNumber>9 & AEK0317$MarkerNumber<10 | AEK0317$MarkerNumber>10 & AEK0317$MarkerNumber<11 | AEK0317$MarkerNumber>11 & AEK0317$MarkerNumber<12 | AEK0317$MarkerNumber>12 & AEK0317$MarkerNumber<13 | AEK0317$MarkerNumber>13 & AEK0317$MarkerNumber<14 | AEK0317$MarkerNumber>14 & AEK0317$MarkerNumber<15 | AEK0317$MarkerNumber>15 & AEK0317$MarkerNumber<16)] <- 'PostAsianFixation'
+samplecsv$FaceType [which(samplecsv$MarkerNumber>9 & samplecsv$MarkerNumber<10 | samplecsv$MarkerNumber>10 & samplecsv$MarkerNumber<11 | samplecsv$MarkerNumber>11 & samplecsv$MarkerNumber<12 | samplecsv$MarkerNumber>12 & samplecsv$MarkerNumber<13 | samplecsv$MarkerNumber>13 & samplecsv$MarkerNumber<14 | samplecsv$MarkerNumber>14 & samplecsv$MarkerNumber<15 | samplecsv$MarkerNumber>15 & samplecsv$MarkerNumber<16)] <- 'PostAsianFixation'
 
-AEK0317$FaceType [which(AEK0317$MarkerNumber>17 & AEK0317$MarkerNumber<18 | AEK0317$MarkerNumber>18 & AEK0317$MarkerNumber<19 | AEK0317$MarkerNumber>19 & AEK0317$MarkerNumber<20 | AEK0317$MarkerNumber>20 & AEK0317$MarkerNumber<21 | AEK0317$MarkerNumber>21 & AEK0317$MarkerNumber<22 | AEK0317$MarkerNumber>22 & AEK0317$MarkerNumber<23 | AEK0317$MarkerNumber>23 & AEK0317$MarkerNumber<24)] <- 'PostAsianFixation'
+samplecsv$FaceType [which(samplecsv$MarkerNumber>17 & samplecsv$MarkerNumber<18 | samplecsv$MarkerNumber>18 & samplecsv$MarkerNumber<19 | samplecsv$MarkerNumber>19 & samplecsv$MarkerNumber<20 | samplecsv$MarkerNumber>20 & samplecsv$MarkerNumber<21 | samplecsv$MarkerNumber>21 & samplecsv$MarkerNumber<22 | samplecsv$MarkerNumber>22 & samplecsv$MarkerNumber<23 | samplecsv$MarkerNumber>23 & samplecsv$MarkerNumber<24)] <- 'PostAsianFixation'
 
-AEK0317$FaceType [which(AEK0317$MarkerNumber>41 & AEK0317$MarkerNumber<42 | AEK0317$MarkerNumber>42 & AEK0317$MarkerNumber<43 | AEK0317$MarkerNumber>43 & AEK0317$MarkerNumber<44 | AEK0317$MarkerNumber>44 & AEK0317$MarkerNumber<45 | AEK0317$MarkerNumber>45 & AEK0317$MarkerNumber<46 | AEK0317$MarkerNumber>46 & AEK0317$MarkerNumber<47 | AEK0317$MarkerNumber>47 & AEK0317$MarkerNumber<48)] <- 'PostAsianFixation'
+samplecsv$FaceType [which(samplecsv$MarkerNumber>41 & samplecsv$MarkerNumber<42 | samplecsv$MarkerNumber>42 & samplecsv$MarkerNumber<43 | samplecsv$MarkerNumber>43 & samplecsv$MarkerNumber<44 | samplecsv$MarkerNumber>44 & samplecsv$MarkerNumber<45 | samplecsv$MarkerNumber>45 & samplecsv$MarkerNumber<46 | samplecsv$MarkerNumber>46 & samplecsv$MarkerNumber<47 | samplecsv$MarkerNumber>47 & samplecsv$MarkerNumber<48)] <- 'PostAsianFixation'
 
-AEK0317$FaceType [which(AEK0317$MarkerNumber>65 & AEK0317$MarkerNumber<66 | AEK0317$MarkerNumber>66 & AEK0317$MarkerNumber<67 | AEK0317$MarkerNumber>67 & AEK0317$MarkerNumber<68 | AEK0317$MarkerNumber>68 & AEK0317$MarkerNumber<69 | AEK0317$MarkerNumber>69 & AEK0317$MarkerNumber<70 | AEK0317$MarkerNumber>70 & AEK0317$MarkerNumber<71 | AEK0317$MarkerNumber>71 & AEK0317$MarkerNumber<72)] <- 'PostAsianFixation'
+samplecsv$FaceType [which(samplecsv$MarkerNumber>65 & samplecsv$MarkerNumber<66 | samplecsv$MarkerNumber>66 & samplecsv$MarkerNumber<67 | samplecsv$MarkerNumber>67 & samplecsv$MarkerNumber<68 | samplecsv$MarkerNumber>68 & samplecsv$MarkerNumber<69 | samplecsv$MarkerNumber>69 & samplecsv$MarkerNumber<70 | samplecsv$MarkerNumber>70 & samplecsv$MarkerNumber<71 | samplecsv$MarkerNumber>71 & samplecsv$MarkerNumber<72)] <- 'PostAsianFixation'
 
-AEK0317$FaceType [which(AEK0317$MarkerNumber>89 & AEK0317$MarkerNumber<90 | AEK0317$MarkerNumber>90 & AEK0317$MarkerNumber<91 | AEK0317$MarkerNumber>91 & AEK0317$MarkerNumber<92 | AEK0317$MarkerNumber>92 & AEK0317$MarkerNumber<93 | AEK0317$MarkerNumber>93 & AEK0317$MarkerNumber<94 | AEK0317$MarkerNumber>94 & AEK0317$MarkerNumber<95 | AEK0317$MarkerNumber>95 & AEK0317$MarkerNumber<96)] <- 'PostAsianFixation'
+samplecsv$FaceType [which(samplecsv$MarkerNumber>89 & samplecsv$MarkerNumber<90 | samplecsv$MarkerNumber>90 & samplecsv$MarkerNumber<91 | samplecsv$MarkerNumber>91 & samplecsv$MarkerNumber<92 | samplecsv$MarkerNumber>92 & samplecsv$MarkerNumber<93 | samplecsv$MarkerNumber>93 & samplecsv$MarkerNumber<94 | samplecsv$MarkerNumber>94 & samplecsv$MarkerNumber<95 | samplecsv$MarkerNumber>95 & samplecsv$MarkerNumber<96)] <- 'PostAsianFixation'
 
-AEK0317$FaceType [which(AEK0317$MarkerNumber>97 & AEK0317$MarkerNumber<98 | AEK0317$MarkerNumber>98 & AEK0317$MarkerNumber<99 | AEK0317$MarkerNumber>99 & AEK0317$MarkerNumber<100 | AEK0317$MarkerNumber>100 & AEK0317$MarkerNumber<101 | AEK0317$MarkerNumber>101 & AEK0317$MarkerNumber<102 | AEK0317$MarkerNumber>102 & AEK0317$MarkerNumber<103 | AEK0317$MarkerNumber>103 & AEK0317$MarkerNumber<104)] <- 'PostAsianFixation'
+samplecsv$FaceType [which(samplecsv$MarkerNumber>97 & samplecsv$MarkerNumber<98 | samplecsv$MarkerNumber>98 & samplecsv$MarkerNumber<99 | samplecsv$MarkerNumber>99 & samplecsv$MarkerNumber<100 | samplecsv$MarkerNumber>100 & samplecsv$MarkerNumber<101 | samplecsv$MarkerNumber>101 & samplecsv$MarkerNumber<102 | samplecsv$MarkerNumber>102 & samplecsv$MarkerNumber<103 | samplecsv$MarkerNumber>103 & samplecsv$MarkerNumber<104)] <- 'PostAsianFixation'
 
-AEK0317$FaceType [which(AEK0317$MarkerNumber>105 & AEK0317$MarkerNumber<106 | AEK0317$MarkerNumber>106 & AEK0317$MarkerNumber<107 | AEK0317$MarkerNumber>107 & AEK0317$MarkerNumber<108 | AEK0317$MarkerNumber>108 & AEK0317$MarkerNumber<109 | AEK0317$MarkerNumber>109 & AEK0317$MarkerNumber<110 | AEK0317$MarkerNumber>110 & AEK0317$MarkerNumber<111 | AEK0317$MarkerNumber>111 & AEK0317$MarkerNumber<112)] <- 'PostAsianFixation'
+samplecsv$FaceType [which(samplecsv$MarkerNumber>105 & samplecsv$MarkerNumber<106 | samplecsv$MarkerNumber>106 & samplecsv$MarkerNumber<107 | samplecsv$MarkerNumber>107 & samplecsv$MarkerNumber<108 | samplecsv$MarkerNumber>108 & samplecsv$MarkerNumber<109 | samplecsv$MarkerNumber>109 & samplecsv$MarkerNumber<110 | samplecsv$MarkerNumber>110 & samplecsv$MarkerNumber<111 | samplecsv$MarkerNumber>111 & samplecsv$MarkerNumber<112)] <- 'PostAsianFixation'
 
-AEK0317$FaceType [which(AEK0317$MarkerNumber>121 & AEK0317$MarkerNumber<122 | AEK0317$MarkerNumber>122 & AEK0317$MarkerNumber<123 | AEK0317$MarkerNumber>123 & AEK0317$MarkerNumber<124 | AEK0317$MarkerNumber>124 & AEK0317$MarkerNumber<125 | AEK0317$MarkerNumber>125 & AEK0317$MarkerNumber<126 | AEK0317$MarkerNumber>126 & AEK0317$MarkerNumber<127 | AEK0317$MarkerNumber>127 & AEK0317$MarkerNumber<128)] <- 'PostAsianFixation'
+samplecsv$FaceType [which(samplecsv$MarkerNumber>121 & samplecsv$MarkerNumber<122 | samplecsv$MarkerNumber>122 & samplecsv$MarkerNumber<123 | samplecsv$MarkerNumber>123 & samplecsv$MarkerNumber<124 | samplecsv$MarkerNumber>124 & samplecsv$MarkerNumber<125 | samplecsv$MarkerNumber>125 & samplecsv$MarkerNumber<126 | samplecsv$MarkerNumber>126 & samplecsv$MarkerNumber<127 | samplecsv$MarkerNumber>127 & samplecsv$MarkerNumber<128)] <- 'PostAsianFixation'
 
-AEK0317$FaceType [which(AEK0317$MarkerNumber>153 & AEK0317$MarkerNumber<154 | AEK0317$MarkerNumber>154 & AEK0317$MarkerNumber<155 | AEK0317$MarkerNumber>155 & AEK0317$MarkerNumber<156 | AEK0317$MarkerNumber>156 & AEK0317$MarkerNumber<157 | AEK0317$MarkerNumber>157 & AEK0317$MarkerNumber<158 | AEK0317$MarkerNumber>158 & AEK0317$MarkerNumber<159 | AEK0317$MarkerNumber>159 & AEK0317$MarkerNumber<160)] <- 'PostAsianFixation'
+samplecsv$FaceType [which(samplecsv$MarkerNumber>153 & samplecsv$MarkerNumber<154 | samplecsv$MarkerNumber>154 & samplecsv$MarkerNumber<155 | samplecsv$MarkerNumber>155 & samplecsv$MarkerNumber<156 | samplecsv$MarkerNumber>156 & samplecsv$MarkerNumber<157 | samplecsv$MarkerNumber>157 & samplecsv$MarkerNumber<158 | samplecsv$MarkerNumber>158 & samplecsv$MarkerNumber<159 | samplecsv$MarkerNumber>159 & samplecsv$MarkerNumber<160)] <- 'PostAsianFixation'
 
-AEK0317$FaceType [which(AEK0317$MarkerNumber>169 & AEK0317$MarkerNumber<170 | AEK0317$MarkerNumber>170 & AEK0317$MarkerNumber<171 | AEK0317$MarkerNumber>171 & AEK0317$MarkerNumber<172 | AEK0317$MarkerNumber>172 & AEK0317$MarkerNumber<173 | AEK0317$MarkerNumber>173 & AEK0317$MarkerNumber<174 | AEK0317$MarkerNumber>174 & AEK0317$MarkerNumber<175 | AEK0317$MarkerNumber>175 & AEK0317$MarkerNumber<176)] <- 'PostAsianFixation'
+samplecsv$FaceType [which(samplecsv$MarkerNumber>169 & samplecsv$MarkerNumber<170 | samplecsv$MarkerNumber>170 & samplecsv$MarkerNumber<171 | samplecsv$MarkerNumber>171 & samplecsv$MarkerNumber<172 | samplecsv$MarkerNumber>172 & samplecsv$MarkerNumber<173 | samplecsv$MarkerNumber>173 & samplecsv$MarkerNumber<174 | samplecsv$MarkerNumber>174 & samplecsv$MarkerNumber<175 | samplecsv$MarkerNumber>175 & samplecsv$MarkerNumber<176)] <- 'PostAsianFixation'
 
-AEK0317$FaceType [which(AEK0317$MarkerNumber>177 & AEK0317$MarkerNumber<178 | AEK0317$MarkerNumber>178 & AEK0317$MarkerNumber<179 | AEK0317$MarkerNumber>179 & AEK0317$MarkerNumber<180 | AEK0317$MarkerNumber>180 & AEK0317$MarkerNumber<181 | AEK0317$MarkerNumber>181 & AEK0317$MarkerNumber<182 | AEK0317$MarkerNumber>182 & AEK0317$MarkerNumber<183 | AEK0317$MarkerNumber>183 & AEK0317$MarkerNumber<184)] <- 'PostAsianFixation'
+samplecsv$FaceType [which(samplecsv$MarkerNumber>177 & samplecsv$MarkerNumber<178 | samplecsv$MarkerNumber>178 & samplecsv$MarkerNumber<179 | samplecsv$MarkerNumber>179 & samplecsv$MarkerNumber<180 | samplecsv$MarkerNumber>180 & samplecsv$MarkerNumber<181 | samplecsv$MarkerNumber>181 & samplecsv$MarkerNumber<182 | samplecsv$MarkerNumber>182 & samplecsv$MarkerNumber<183 | samplecsv$MarkerNumber>183 & samplecsv$MarkerNumber<184)] <- 'PostAsianFixation'
 
-AEK0317$FaceType [which(AEK0317$MarkerNumber>185 & AEK0317$MarkerNumber<186 | AEK0317$MarkerNumber>186 & AEK0317$MarkerNumber<187 | AEK0317$MarkerNumber>187 & AEK0317$MarkerNumber<188 | AEK0317$MarkerNumber>188 & AEK0317$MarkerNumber<189 | AEK0317$MarkerNumber>189 & AEK0317$MarkerNumber<190 | AEK0317$MarkerNumber>190 & AEK0317$MarkerNumber<191 | AEK0317$MarkerNumber>191 & AEK0317$MarkerNumber<192)] <- 'PostAsianFixation'
+samplecsv$FaceType [which(samplecsv$MarkerNumber>185 & samplecsv$MarkerNumber<186 | samplecsv$MarkerNumber>186 & samplecsv$MarkerNumber<187 | samplecsv$MarkerNumber>187 & samplecsv$MarkerNumber<188 | samplecsv$MarkerNumber>188 & samplecsv$MarkerNumber<189 | samplecsv$MarkerNumber>189 & samplecsv$MarkerNumber<190 | samplecsv$MarkerNumber>190 & samplecsv$MarkerNumber<191 | samplecsv$MarkerNumber>191 & samplecsv$MarkerNumber<192)] <- 'PostAsianFixation'
 
-AEK0317$FaceType [which(AEK0317$MarkerNumber>193 & AEK0317$MarkerNumber<194 | AEK0317$MarkerNumber>194 & AEK0317$MarkerNumber<195 | AEK0317$MarkerNumber>195 & AEK0317$MarkerNumber<196 | AEK0317$MarkerNumber>196 & AEK0317$MarkerNumber<197 | AEK0317$MarkerNumber>197 & AEK0317$MarkerNumber<198 | AEK0317$MarkerNumber>198 & AEK0317$MarkerNumber<199 | AEK0317$MarkerNumber>200 & AEK0317$MarkerNumber<200)] <- 'PostAsianFixation'
+samplecsv$FaceType [which(samplecsv$MarkerNumber>193 & samplecsv$MarkerNumber<194 | samplecsv$MarkerNumber>194 & samplecsv$MarkerNumber<195 | samplecsv$MarkerNumber>195 & samplecsv$MarkerNumber<196 | samplecsv$MarkerNumber>196 & samplecsv$MarkerNumber<197 | samplecsv$MarkerNumber>197 & samplecsv$MarkerNumber<198 | samplecsv$MarkerNumber>198 & samplecsv$MarkerNumber<199 | samplecsv$MarkerNumber>200 & samplecsv$MarkerNumber<200)] <- 'PostAsianFixation'
 
 #POST CAUCASION FIXATION
-AEK0317$FaceType [which(AEK0317$MarkerNumber>1 & AEK0317$MarkerNumber<2 | AEK0317$MarkerNumber>2 & AEK0317$MarkerNumber<3 | AEK0317$MarkerNumber>3 & AEK0317$MarkerNumber<4 | AEK0317$MarkerNumber>4 & AEK0317$MarkerNumber<5 | AEK0317$MarkerNumber>5 & AEK0317$MarkerNumber<6 | AEK0317$MarkerNumber>6 & AEK0317$MarkerNumber<7 | AEK0317$MarkerNumber>7 & AEK0317$MarkerNumber<8)] <- 'PostCaucasionFixation'
+samplecsv$FaceType [which(samplecsv$MarkerNumber>1 & samplecsv$MarkerNumber<2 | samplecsv$MarkerNumber>2 & samplecsv$MarkerNumber<3 | samplecsv$MarkerNumber>3 & samplecsv$MarkerNumber<4 | samplecsv$MarkerNumber>4 & samplecsv$MarkerNumber<5 | samplecsv$MarkerNumber>5 & samplecsv$MarkerNumber<6 | samplecsv$MarkerNumber>6 & samplecsv$MarkerNumber<7 | samplecsv$MarkerNumber>7 & samplecsv$MarkerNumber<8)] <- 'PostCaucasionFixation'
 
-AEK0317$FaceType [which(AEK0317$MarkerNumber>25 & AEK0317$MarkerNumber<26 | AEK0317$MarkerNumber>26 & AEK0317$MarkerNumber<27 | AEK0317$MarkerNumber>27 & AEK0317$MarkerNumber<28 | AEK0317$MarkerNumber>28 & AEK0317$MarkerNumber<29 | AEK0317$MarkerNumber>29 & AEK0317$MarkerNumber<30 | AEK0317$MarkerNumber>30 & AEK0317$MarkerNumber<31 | AEK0317$MarkerNumber>31 & AEK0317$MarkerNumber<32)] <- 'PostCaucasionFixation'
+samplecsv$FaceType [which(samplecsv$MarkerNumber>25 & samplecsv$MarkerNumber<26 | samplecsv$MarkerNumber>26 & samplecsv$MarkerNumber<27 | samplecsv$MarkerNumber>27 & samplecsv$MarkerNumber<28 | samplecsv$MarkerNumber>28 & samplecsv$MarkerNumber<29 | samplecsv$MarkerNumber>29 & samplecsv$MarkerNumber<30 | samplecsv$MarkerNumber>30 & samplecsv$MarkerNumber<31 | samplecsv$MarkerNumber>31 & samplecsv$MarkerNumber<32)] <- 'PostCaucasionFixation'
 
-AEK0317$FaceType [which(AEK0317$MarkerNumber>33 & AEK0317$MarkerNumber<34 | AEK0317$MarkerNumber>34 & AEK0317$MarkerNumber<35 | AEK0317$MarkerNumber>35 & AEK0317$MarkerNumber<36 | AEK0317$MarkerNumber>36 & AEK0317$MarkerNumber<37 | AEK0317$MarkerNumber>37 & AEK0317$MarkerNumber<38 | AEK0317$MarkerNumber>38 & AEK0317$MarkerNumber<39 | AEK0317$MarkerNumber>39 & AEK0317$MarkerNumber<40)] <- 'PostCaucasionFixation'
+samplecsv$FaceType [which(samplecsv$MarkerNumber>33 & samplecsv$MarkerNumber<34 | samplecsv$MarkerNumber>34 & samplecsv$MarkerNumber<35 | samplecsv$MarkerNumber>35 & samplecsv$MarkerNumber<36 | samplecsv$MarkerNumber>36 & samplecsv$MarkerNumber<37 | samplecsv$MarkerNumber>37 & samplecsv$MarkerNumber<38 | samplecsv$MarkerNumber>38 & samplecsv$MarkerNumber<39 | samplecsv$MarkerNumber>39 & samplecsv$MarkerNumber<40)] <- 'PostCaucasionFixation'
 
-AEK0317$FaceType [which(AEK0317$MarkerNumber>49 & AEK0317$MarkerNumber<50 | AEK0317$MarkerNumber>50 & AEK0317$MarkerNumber<51 | AEK0317$MarkerNumber>51 & AEK0317$MarkerNumber<52 | AEK0317$MarkerNumber>52 & AEK0317$MarkerNumber<53 | AEK0317$MarkerNumber>53 & AEK0317$MarkerNumber<54 | AEK0317$MarkerNumber>54 & AEK0317$MarkerNumber<55 | AEK0317$MarkerNumber>55 & AEK0317$MarkerNumber<56)] <- 'PostCaucasionFixation'
+samplecsv$FaceType [which(samplecsv$MarkerNumber>49 & samplecsv$MarkerNumber<50 | samplecsv$MarkerNumber>50 & samplecsv$MarkerNumber<51 | samplecsv$MarkerNumber>51 & samplecsv$MarkerNumber<52 | samplecsv$MarkerNumber>52 & samplecsv$MarkerNumber<53 | samplecsv$MarkerNumber>53 & samplecsv$MarkerNumber<54 | samplecsv$MarkerNumber>54 & samplecsv$MarkerNumber<55 | samplecsv$MarkerNumber>55 & samplecsv$MarkerNumber<56)] <- 'PostCaucasionFixation'
 
-AEK0317$FaceType [which(AEK0317$MarkerNumber>57 & AEK0317$MarkerNumber<58 | AEK0317$MarkerNumber>58 & AEK0317$MarkerNumber<59 | AEK0317$MarkerNumber>59 & AEK0317$MarkerNumber<60 | AEK0317$MarkerNumber>60 & AEK0317$MarkerNumber<61 | AEK0317$MarkerNumber>61 & AEK0317$MarkerNumber<62 | AEK0317$MarkerNumber>62 & AEK0317$MarkerNumber<63 | AEK0317$MarkerNumber>63 & AEK0317$MarkerNumber<64)] <- 'PostCaucasionFixation'
+samplecsv$FaceType [which(samplecsv$MarkerNumber>57 & samplecsv$MarkerNumber<58 | samplecsv$MarkerNumber>58 & samplecsv$MarkerNumber<59 | samplecsv$MarkerNumber>59 & samplecsv$MarkerNumber<60 | samplecsv$MarkerNumber>60 & samplecsv$MarkerNumber<61 | samplecsv$MarkerNumber>61 & samplecsv$MarkerNumber<62 | samplecsv$MarkerNumber>62 & samplecsv$MarkerNumber<63 | samplecsv$MarkerNumber>63 & samplecsv$MarkerNumber<64)] <- 'PostCaucasionFixation'
 
-AEK0317$FaceType [which(AEK0317$MarkerNumber>73 & AEK0317$MarkerNumber<74 | AEK0317$MarkerNumber>74 & AEK0317$MarkerNumber<75 | AEK0317$MarkerNumber>75 & AEK0317$MarkerNumber<76 | AEK0317$MarkerNumber>76 & AEK0317$MarkerNumber<77 | AEK0317$MarkerNumber>77 & AEK0317$MarkerNumber<78 | AEK0317$MarkerNumber>78 & AEK0317$MarkerNumber<79 | AEK0317$MarkerNumber>79 & AEK0317$MarkerNumber<80)] <- 'PostCaucasionFixation'
+samplecsv$FaceType [which(samplecsv$MarkerNumber>73 & samplecsv$MarkerNumber<74 | samplecsv$MarkerNumber>74 & samplecsv$MarkerNumber<75 | samplecsv$MarkerNumber>75 & samplecsv$MarkerNumber<76 | samplecsv$MarkerNumber>76 & samplecsv$MarkerNumber<77 | samplecsv$MarkerNumber>77 & samplecsv$MarkerNumber<78 | samplecsv$MarkerNumber>78 & samplecsv$MarkerNumber<79 | samplecsv$MarkerNumber>79 & samplecsv$MarkerNumber<80)] <- 'PostCaucasionFixation'
 
-AEK0317$FaceType [which(AEK0317$MarkerNumber>81 & AEK0317$MarkerNumber<82 | AEK0317$MarkerNumber>82 & AEK0317$MarkerNumber<83 | AEK0317$MarkerNumber>83 & AEK0317$MarkerNumber<84 | AEK0317$MarkerNumber>84 & AEK0317$MarkerNumber<85 | AEK0317$MarkerNumber>85 & AEK0317$MarkerNumber<86 | AEK0317$MarkerNumber>86 & AEK0317$MarkerNumber<87 | AEK0317$MarkerNumber>87 & AEK0317$MarkerNumber<88)] <- 'PostCaucasionFixation'
+samplecsv$FaceType [which(samplecsv$MarkerNumber>81 & samplecsv$MarkerNumber<82 | samplecsv$MarkerNumber>82 & samplecsv$MarkerNumber<83 | samplecsv$MarkerNumber>83 & samplecsv$MarkerNumber<84 | samplecsv$MarkerNumber>84 & samplecsv$MarkerNumber<85 | samplecsv$MarkerNumber>85 & samplecsv$MarkerNumber<86 | samplecsv$MarkerNumber>86 & samplecsv$MarkerNumber<87 | samplecsv$MarkerNumber>87 & samplecsv$MarkerNumber<88)] <- 'PostCaucasionFixation'
 
-AEK0317$FaceType [which(AEK0317$MarkerNumber>113 & AEK0317$MarkerNumber<114 | AEK0317$MarkerNumber>114 & AEK0317$MarkerNumber<115 | AEK0317$MarkerNumber>115 & AEK0317$MarkerNumber<116 | AEK0317$MarkerNumber>116 & AEK0317$MarkerNumber<117 | AEK0317$MarkerNumber>117 & AEK0317$MarkerNumber<118 | AEK0317$MarkerNumber>118 & AEK0317$MarkerNumber<119 | AEK0317$MarkerNumber>119 & AEK0317$MarkerNumber<120)] <- 'PostCaucasionFixation'
+samplecsv$FaceType [which(samplecsv$MarkerNumber>113 & samplecsv$MarkerNumber<114 | samplecsv$MarkerNumber>114 & samplecsv$MarkerNumber<115 | samplecsv$MarkerNumber>115 & samplecsv$MarkerNumber<116 | samplecsv$MarkerNumber>116 & samplecsv$MarkerNumber<117 | samplecsv$MarkerNumber>117 & samplecsv$MarkerNumber<118 | samplecsv$MarkerNumber>118 & samplecsv$MarkerNumber<119 | samplecsv$MarkerNumber>119 & samplecsv$MarkerNumber<120)] <- 'PostCaucasionFixation'
 
-AEK0317$FaceType [which(AEK0317$MarkerNumber>129 & AEK0317$MarkerNumber<130 | AEK0317$MarkerNumber>130 & AEK0317$MarkerNumber<131 | AEK0317$MarkerNumber>131 & AEK0317$MarkerNumber<132 | AEK0317$MarkerNumber>132 & AEK0317$MarkerNumber<133 | AEK0317$MarkerNumber>133 & AEK0317$MarkerNumber<134 | AEK0317$MarkerNumber>134 & AEK0317$MarkerNumber<135 | AEK0317$MarkerNumber>135 & AEK0317$MarkerNumber<136)] <- 'PostCaucasionFixation'
+samplecsv$FaceType [which(samplecsv$MarkerNumber>129 & samplecsv$MarkerNumber<130 | samplecsv$MarkerNumber>130 & samplecsv$MarkerNumber<131 | samplecsv$MarkerNumber>131 & samplecsv$MarkerNumber<132 | samplecsv$MarkerNumber>132 & samplecsv$MarkerNumber<133 | samplecsv$MarkerNumber>133 & samplecsv$MarkerNumber<134 | samplecsv$MarkerNumber>134 & samplecsv$MarkerNumber<135 | samplecsv$MarkerNumber>135 & samplecsv$MarkerNumber<136)] <- 'PostCaucasionFixation'
 
-AEK0317$FaceType [which(AEK0317$MarkerNumber>137 & AEK0317$MarkerNumber<138 | AEK0317$MarkerNumber>138 & AEK0317$MarkerNumber<139 | AEK0317$MarkerNumber>139 & AEK0317$MarkerNumber<140 | AEK0317$MarkerNumber>140 & AEK0317$MarkerNumber<141 | AEK0317$MarkerNumber>141 & AEK0317$MarkerNumber<142 | AEK0317$MarkerNumber>142 & AEK0317$MarkerNumber<143 | AEK0317$MarkerNumber>143 & AEK0317$MarkerNumber<144)] <- 'PostCaucasionFixation'
+samplecsv$FaceType [which(samplecsv$MarkerNumber>137 & samplecsv$MarkerNumber<138 | samplecsv$MarkerNumber>138 & samplecsv$MarkerNumber<139 | samplecsv$MarkerNumber>139 & samplecsv$MarkerNumber<140 | samplecsv$MarkerNumber>140 & samplecsv$MarkerNumber<141 | samplecsv$MarkerNumber>141 & samplecsv$MarkerNumber<142 | samplecsv$MarkerNumber>142 & samplecsv$MarkerNumber<143 | samplecsv$MarkerNumber>143 & samplecsv$MarkerNumber<144)] <- 'PostCaucasionFixation'
 
-AEK0317$FaceType [which(AEK0317$MarkerNumber>145 & AEK0317$MarkerNumber<146 | AEK0317$MarkerNumber>146 & AEK0317$MarkerNumber<147 | AEK0317$MarkerNumber>147 & AEK0317$MarkerNumber<148 | AEK0317$MarkerNumber>148 & AEK0317$MarkerNumber<149 | AEK0317$MarkerNumber>149 & AEK0317$MarkerNumber<150 | AEK0317$MarkerNumber>150 & AEK0317$MarkerNumber<151 | AEK0317$MarkerNumber>151 & AEK0317$MarkerNumber<152)] <- 'PostCaucasionFixation'
+samplecsv$FaceType [which(samplecsv$MarkerNumber>145 & samplecsv$MarkerNumber<146 | samplecsv$MarkerNumber>146 & samplecsv$MarkerNumber<147 | samplecsv$MarkerNumber>147 & samplecsv$MarkerNumber<148 | samplecsv$MarkerNumber>148 & samplecsv$MarkerNumber<149 | samplecsv$MarkerNumber>149 & samplecsv$MarkerNumber<150 | samplecsv$MarkerNumber>150 & samplecsv$MarkerNumber<151 | samplecsv$MarkerNumber>151 & samplecsv$MarkerNumber<152)] <- 'PostCaucasionFixation'
 
-AEK0317$FaceType [which(AEK0317$MarkerNumber>161 & AEK0317$MarkerNumber<162 | AEK0317$MarkerNumber>162 & AEK0317$MarkerNumber<163 | AEK0317$MarkerNumber>163 & AEK0317$MarkerNumber<164 | AEK0317$MarkerNumber>164 & AEK0317$MarkerNumber<165 | AEK0317$MarkerNumber>165 & AEK0317$MarkerNumber<166 | AEK0317$MarkerNumber>166 & AEK0317$MarkerNumber<167 | AEK0317$MarkerNumber>167 & AEK0317$MarkerNumber<168)] <- 'PostCaucasionFixation'
+samplecsv$FaceType [which(samplecsv$MarkerNumber>161 & samplecsv$MarkerNumber<162 | samplecsv$MarkerNumber>162 & samplecsv$MarkerNumber<163 | samplecsv$MarkerNumber>163 & samplecsv$MarkerNumber<164 | samplecsv$MarkerNumber>164 & samplecsv$MarkerNumber<165 | samplecsv$MarkerNumber>165 & samplecsv$MarkerNumber<166 | samplecsv$MarkerNumber>166 & samplecsv$MarkerNumber<167 | samplecsv$MarkerNumber>167 & samplecsv$MarkerNumber<168)] <- 'PostCaucasionFixation'
 
 #Also label the interblock fixations as baseline fixations
-AEK0317$TaskCue [which(AEK0317$MarkerNumber>16 & AEK0317$MarkerNumber<17 | AEK0317$MarkerNumber>24 & AEK0317$MarkerNumber<25 | AEK0317$MarkerNumber>32 & AEK0317$MarkerNumber<33 | AEK0317$MarkerNumber>40 & AEK0317$MarkerNumber<41 | AEK0317$MarkerNumber>48 & AEK0317$MarkerNumber<49 | AEK0317$MarkerNumber>56 & AEK0317$MarkerNumber<57 | AEK0317$MarkerNumber>64 & AEK0317$MarkerNumber<65)] <- "BaselineFixation"
+samplecsv$TaskCue [which(samplecsv$MarkerNumber>16 & samplecsv$MarkerNumber<17 | samplecsv$MarkerNumber>24 & samplecsv$MarkerNumber<25 | samplecsv$MarkerNumber>32 & samplecsv$MarkerNumber<33 | samplecsv$MarkerNumber>40 & samplecsv$MarkerNumber<41 | samplecsv$MarkerNumber>48 & samplecsv$MarkerNumber<49 | samplecsv$MarkerNumber>56 & samplecsv$MarkerNumber<57 | samplecsv$MarkerNumber>64 & samplecsv$MarkerNumber<65)] <- "BaselineFixation"
 
-AEK0317$TaskCue [which(AEK0317$MarkerNumber>80 & AEK0317$MarkerNumber<81 | AEK0317$MarkerNumber>88 & AEK0317$MarkerNumber<89 | AEK0317$MarkerNumber>96 & AEK0317$MarkerNumber<97 | AEK0317$MarkerNumber>104 & AEK0317$MarkerNumber<105 | AEK0317$MarkerNumber>112 & AEK0317$MarkerNumber<113 | AEK0317$MarkerNumber>120 & AEK0317$MarkerNumber<121 | AEK0317$MarkerNumber>128 & AEK0317$MarkerNumber<129)] <- "BaselineFixation"
+samplecsv$TaskCue [which(samplecsv$MarkerNumber>80 & samplecsv$MarkerNumber<81 | samplecsv$MarkerNumber>88 & samplecsv$MarkerNumber<89 | samplecsv$MarkerNumber>96 & samplecsv$MarkerNumber<97 | samplecsv$MarkerNumber>104 & samplecsv$MarkerNumber<105 | samplecsv$MarkerNumber>112 & samplecsv$MarkerNumber<113 | samplecsv$MarkerNumber>120 & samplecsv$MarkerNumber<121 | samplecsv$MarkerNumber>128 & samplecsv$MarkerNumber<129)] <- "BaselineFixation"
 
-AEK0317$TaskCue [which(AEK0317$MarkerNumber>144 & AEK0317$MarkerNumber<145 | AEK0317$MarkerNumber>152 & AEK0317$MarkerNumber<153 | AEK0317$MarkerNumber>160 & AEK0317$MarkerNumber<161 | AEK0317$MarkerNumber>168 & AEK0317$MarkerNumber<169 | AEK0317$MarkerNumber>176 & AEK0317$MarkerNumber<177 | AEK0317$MarkerNumber>184 & AEK0317$MarkerNumber<185 | AEK0317$MarkerNumber>192 & AEK0317$MarkerNumber<193)] <- "BaselineFixation"
+samplecsv$TaskCue [which(samplecsv$MarkerNumber>144 & samplecsv$MarkerNumber<145 | samplecsv$MarkerNumber>152 & samplecsv$MarkerNumber<153 | samplecsv$MarkerNumber>160 & samplecsv$MarkerNumber<161 | samplecsv$MarkerNumber>168 & samplecsv$MarkerNumber<169 | samplecsv$MarkerNumber>176 & samplecsv$MarkerNumber<177 | samplecsv$MarkerNumber>184 & samplecsv$MarkerNumber<185 | samplecsv$MarkerNumber>192 & samplecsv$MarkerNumber<193)] <- "BaselineFixation"
 
-AEK0317$ValenceType [which(AEK0317$MarkerNumber>16 & AEK0317$MarkerNumber<17 | AEK0317$MarkerNumber>24 & AEK0317$MarkerNumber<25 | AEK0317$MarkerNumber>32 & AEK0317$MarkerNumber<33 | AEK0317$MarkerNumber>40 & AEK0317$MarkerNumber<41 | AEK0317$MarkerNumber>48 & AEK0317$MarkerNumber<49 | AEK0317$MarkerNumber>56 & AEK0317$MarkerNumber<57 | AEK0317$MarkerNumber>64 & AEK0317$MarkerNumber<65)] <- "BaselineFixation"
+samplecsv$ValenceType [which(samplecsv$MarkerNumber>16 & samplecsv$MarkerNumber<17 | samplecsv$MarkerNumber>24 & samplecsv$MarkerNumber<25 | samplecsv$MarkerNumber>32 & samplecsv$MarkerNumber<33 | samplecsv$MarkerNumber>40 & samplecsv$MarkerNumber<41 | samplecsv$MarkerNumber>48 & samplecsv$MarkerNumber<49 | samplecsv$MarkerNumber>56 & samplecsv$MarkerNumber<57 | samplecsv$MarkerNumber>64 & samplecsv$MarkerNumber<65)] <- "BaselineFixation"
 
-AEK0317$ValenceType [which(AEK0317$MarkerNumber>80 & AEK0317$MarkerNumber<81 | AEK0317$MarkerNumber>88 & AEK0317$MarkerNumber<89 | AEK0317$MarkerNumber>96 & AEK0317$MarkerNumber<97 | AEK0317$MarkerNumber>104 & AEK0317$MarkerNumber<105 | AEK0317$MarkerNumber>112 & AEK0317$MarkerNumber<113 | AEK0317$MarkerNumber>120 & AEK0317$MarkerNumber<121 | AEK0317$MarkerNumber>128 & AEK0317$MarkerNumber<129)] <- "BaselineFixation"
+samplecsv$ValenceType [which(samplecsv$MarkerNumber>80 & samplecsv$MarkerNumber<81 | samplecsv$MarkerNumber>88 & samplecsv$MarkerNumber<89 | samplecsv$MarkerNumber>96 & samplecsv$MarkerNumber<97 | samplecsv$MarkerNumber>104 & samplecsv$MarkerNumber<105 | samplecsv$MarkerNumber>112 & samplecsv$MarkerNumber<113 | samplecsv$MarkerNumber>120 & samplecsv$MarkerNumber<121 | samplecsv$MarkerNumber>128 & samplecsv$MarkerNumber<129)] <- "BaselineFixation"
 
-AEK0317$ValenceType [which(AEK0317$MarkerNumber>144 & AEK0317$MarkerNumber<145 | AEK0317$MarkerNumber>152 & AEK0317$MarkerNumber<153 | AEK0317$MarkerNumber>160 & AEK0317$MarkerNumber<161 | AEK0317$MarkerNumber>168 & AEK0317$MarkerNumber<169 | AEK0317$MarkerNumber>176 & AEK0317$MarkerNumber<177 | AEK0317$MarkerNumber>184 & AEK0317$MarkerNumber<185 | AEK0317$MarkerNumber>192 & AEK0317$MarkerNumber<193)] <- "BaselineFixation"
+samplecsv$ValenceType [which(samplecsv$MarkerNumber>144 & samplecsv$MarkerNumber<145 | samplecsv$MarkerNumber>152 & samplecsv$MarkerNumber<153 | samplecsv$MarkerNumber>160 & samplecsv$MarkerNumber<161 | samplecsv$MarkerNumber>168 & samplecsv$MarkerNumber<169 | samplecsv$MarkerNumber>176 & samplecsv$MarkerNumber<177 | samplecsv$MarkerNumber>184 & samplecsv$MarkerNumber<185 | samplecsv$MarkerNumber>192 & samplecsv$MarkerNumber<193)] <- "BaselineFixation"
 
-AEK0317$FaceType [which(AEK0317$MarkerNumber>16 & AEK0317$MarkerNumber<17 | AEK0317$MarkerNumber>24 & AEK0317$MarkerNumber<25 | AEK0317$MarkerNumber>32 & AEK0317$MarkerNumber<33 | AEK0317$MarkerNumber>40 & AEK0317$MarkerNumber<41 | AEK0317$MarkerNumber>48 & AEK0317$MarkerNumber<49 | AEK0317$MarkerNumber>56 & AEK0317$MarkerNumber<57 | AEK0317$MarkerNumber>64 & AEK0317$MarkerNumber<65)] <- "BaselineFixation"
+samplecsv$FaceType [which(samplecsv$MarkerNumber>16 & samplecsv$MarkerNumber<17 | samplecsv$MarkerNumber>24 & samplecsv$MarkerNumber<25 | samplecsv$MarkerNumber>32 & samplecsv$MarkerNumber<33 | samplecsv$MarkerNumber>40 & samplecsv$MarkerNumber<41 | samplecsv$MarkerNumber>48 & samplecsv$MarkerNumber<49 | samplecsv$MarkerNumber>56 & samplecsv$MarkerNumber<57 | samplecsv$MarkerNumber>64 & samplecsv$MarkerNumber<65)] <- "BaselineFixation"
 
-AEK0317$FaceType [which(AEK0317$MarkerNumber>80 & AEK0317$MarkerNumber<81 | AEK0317$MarkerNumber>88 & AEK0317$MarkerNumber<89 | AEK0317$MarkerNumber>96 & AEK0317$MarkerNumber<97 | AEK0317$MarkerNumber>104 & AEK0317$MarkerNumber<105 | AEK0317$MarkerNumber>112 & AEK0317$MarkerNumber<113 | AEK0317$MarkerNumber>120 & AEK0317$MarkerNumber<121 | AEK0317$MarkerNumber>128 & AEK0317$MarkerNumber<129)] <- "BaselineFixation"
+samplecsv$FaceType [which(samplecsv$MarkerNumber>80 & samplecsv$MarkerNumber<81 | samplecsv$MarkerNumber>88 & samplecsv$MarkerNumber<89 | samplecsv$MarkerNumber>96 & samplecsv$MarkerNumber<97 | samplecsv$MarkerNumber>104 & samplecsv$MarkerNumber<105 | samplecsv$MarkerNumber>112 & samplecsv$MarkerNumber<113 | samplecsv$MarkerNumber>120 & samplecsv$MarkerNumber<121 | samplecsv$MarkerNumber>128 & samplecsv$MarkerNumber<129)] <- "BaselineFixation"
 
-AEK0317$FaceType [which(AEK0317$MarkerNumber>144 & AEK0317$MarkerNumber<145 | AEK0317$MarkerNumber>152 & AEK0317$MarkerNumber<153 | AEK0317$MarkerNumber>160 & AEK0317$MarkerNumber<161 | AEK0317$MarkerNumber>168 & AEK0317$MarkerNumber<169 | AEK0317$MarkerNumber>176 & AEK0317$MarkerNumber<177 | AEK0317$MarkerNumber>184 & AEK0317$MarkerNumber<185 | AEK0317$MarkerNumber>192 & AEK0317$MarkerNumber<193)] <- "BaselineFixation"
+samplecsv$FaceType [which(samplecsv$MarkerNumber>144 & samplecsv$MarkerNumber<145 | samplecsv$MarkerNumber>152 & samplecsv$MarkerNumber<153 | samplecsv$MarkerNumber>160 & samplecsv$MarkerNumber<161 | samplecsv$MarkerNumber>168 & samplecsv$MarkerNumber<169 | samplecsv$MarkerNumber>176 & samplecsv$MarkerNumber<177 | samplecsv$MarkerNumber>184 & samplecsv$MarkerNumber<185 | samplecsv$MarkerNumber>192 & samplecsv$MarkerNumber<193)] <- "BaselineFixation"
 
 
 
 
 
 #re-label fixations to reflect pre vs post stimulus fixations
-AEK0317$TaskCue [which(AEK0317$TaskCue == "PostInOutFixation" & AEK0317$PupilaryLatencyAll>=-2500 & AEK0317$PupilaryLatencyAll<=-.001)] <- "PreInOutFixation" 
+samplecsv$TaskCue [which(samplecsv$TaskCue == "PostInOutFixation" & samplecsv$PupilaryLatencyAll>=-2500 & samplecsv$PupilaryLatencyAll<=-.001)] <- "PreInOutFixation" 
 
-AEK0317$TaskCue [which(AEK0317$TaskCue == "PostMaleFemaleFixation" & AEK0317$PupilaryLatencyAll>=-2500 & AEK0317$PupilaryLatencyAll<=-.001)] <- "PreMaleFemaleFixation" 
+samplecsv$TaskCue [which(samplecsv$TaskCue == "PostMaleFemaleFixation" & samplecsv$PupilaryLatencyAll>=-2500 & samplecsv$PupilaryLatencyAll<=-.001)] <- "PreMaleFemaleFixation" 
 
-AEK0317$TaskCue [which(AEK0317$TaskCue == "PostLikeDislikeFixation" & AEK0317$PupilaryLatencyAll>=-2500 & AEK0317$PupilaryLatencyAll<=-.001)] <- "PreLikeDislikeFixation" 
+samplecsv$TaskCue [which(samplecsv$TaskCue == "PostLikeDislikeFixation" & samplecsv$PupilaryLatencyAll>=-2500 & samplecsv$PupilaryLatencyAll<=-.001)] <- "PreLikeDislikeFixation" 
 
-AEK0317$ValenceType [which(AEK0317$ValenceType == "PostFearFixation" & AEK0317$PupilaryLatencyAll>=-2500 & AEK0317$PupilaryLatencyAll<=-.001)] <- "PreFearFixation" 
+samplecsv$ValenceType [which(samplecsv$ValenceType == "PostFearFixation" & samplecsv$PupilaryLatencyAll>=-2500 & samplecsv$PupilaryLatencyAll<=-.001)] <- "PreFearFixation" 
 
-AEK0317$ValenceType [which(AEK0317$ValenceType == "PostNeutralFixation" & AEK0317$PupilaryLatencyAll>=-2500 & AEK0317$PupilaryLatencyAll<=-.001)] <- "PreNeutralFixation" 
+samplecsv$ValenceType [which(samplecsv$ValenceType == "PostNeutralFixation" & samplecsv$PupilaryLatencyAll>=-2500 & samplecsv$PupilaryLatencyAll<=-.001)] <- "PreNeutralFixation" 
 
-AEK0317$FaceType [which(AEK0317$FaceType == "PostAsianFixation" & AEK0317$PupilaryLatencyAll>=-2500 & AEK0317$PupilaryLatencyAll<=-.001)] <- "PreAsianFixation" 
+samplecsv$FaceType [which(samplecsv$FaceType == "PostAsianFixation" & samplecsv$PupilaryLatencyAll>=-2500 & samplecsv$PupilaryLatencyAll<=-.001)] <- "PreAsianFixation" 
 
-AEK0317$FaceType [which(AEK0317$FaceType == "PostCaucasionFixation" & AEK0317$PupilaryLatencyAll>=-2500 & AEK0317$PupilaryLatencyAll<=-.001)] <- "PreCaucasionFixation" 
-
-
+samplecsv$FaceType [which(samplecsv$FaceType == "PostCaucasionFixation" & samplecsv$PupilaryLatencyAll>=-2500 & samplecsv$PupilaryLatencyAll<=-.001)] <- "PreCaucasionFixation" 
 
 
 
-write.table(AEK0317,file="/Volumes/NO NAME/Csvgroup3-27/CSEyeAEK0317.csv",sep=",",row.names=F)
+
+
+write.table(samplecsv,file="/Volumes/NO NAME/Csvgroup3-27/CSEyesamplecsv.csv",sep=",",row.names=F)
 
 
 
-#AEK0317
-AEK0317$FactorsAll <- NA
+#samplecsv
+samplecsv$FactorsAll <- NA
 
-AEK0317$FactorsAll [which(AEK0317$TaskCue == "InOut" & AEK0317$FaceType == "Asian" & AEK0317$ValenceType == "Fear")] <- "AI/OF" 
-AEK0317$FactorsAll [which(AEK0317$TaskCue == "MaleFemale" & AEK0317$FaceType == "Asian" & AEK0317$ValenceType == "Fear")] <- "AM/FF" 
-AEK0317$FactorsAll [which(AEK0317$TaskCue == "LikeDislike" & AEK0317$FaceType == "Asian" & AEK0317$ValenceType == "Fear")] <- "AL/DF" 
-AEK0317$FactorsAll [which(AEK0317$TaskCue == "InOut" & AEK0317$FaceType == "Asian" & AEK0317$ValenceType == "Neutral")] <- "AI/ON" 
-AEK0317$FactorsAll [which(AEK0317$TaskCue == "MaleFemale" & AEK0317$FaceType == "Asian" & AEK0317$ValenceType == "Neutral")] <- "AM/FN" 
-AEK0317$FactorsAll [which(AEK0317$TaskCue == "LikeDislike" & AEK0317$FaceType == "Asian" & AEK0317$ValenceType == "Neutral")] <- "AL/DN" 
-AEK0317$FactorsAll [which(AEK0317$TaskCue == "InOut" & AEK0317$FaceType == "Caucasion" & AEK0317$ValenceType == "Fear")] <- "CI/OF" 
-AEK0317$FactorsAll [which(AEK0317$TaskCue == "MaleFemale" & AEK0317$FaceType == "Caucasion" & AEK0317$ValenceType == "Fear")] <- "CM/FF" 
-AEK0317$FactorsAll [which(AEK0317$TaskCue == "LikeDislike" & AEK0317$FaceType == "Caucasion" & AEK0317$ValenceType == "Fear")] <- "CL/DF" 
-AEK0317$FactorsAll [which(AEK0317$TaskCue == "InOut" & AEK0317$FaceType == "Caucasion" & AEK0317$ValenceType == "Neutral")] <- "CI/ON" 
-AEK0317$FactorsAll [which(AEK0317$TaskCue == "MaleFemale" & AEK0317$FaceType == "Caucasion" & AEK0317$ValenceType == "Neutral")] <- "CM/FN" 
-AEK0317$FactorsAll [which(AEK0317$TaskCue == "LikeDislike" & AEK0317$FaceType == "Caucasion" & AEK0317$ValenceType == "Neutral")] <- "CL/DN" 
+samplecsv$FactorsAll [which(samplecsv$TaskCue == "InOut" & samplecsv$FaceType == "Asian" & samplecsv$ValenceType == "Fear")] <- "AI/OF" 
+samplecsv$FactorsAll [which(samplecsv$TaskCue == "MaleFemale" & samplecsv$FaceType == "Asian" & samplecsv$ValenceType == "Fear")] <- "AM/FF" 
+samplecsv$FactorsAll [which(samplecsv$TaskCue == "LikeDislike" & samplecsv$FaceType == "Asian" & samplecsv$ValenceType == "Fear")] <- "AL/DF" 
+samplecsv$FactorsAll [which(samplecsv$TaskCue == "InOut" & samplecsv$FaceType == "Asian" & samplecsv$ValenceType == "Neutral")] <- "AI/ON" 
+samplecsv$FactorsAll [which(samplecsv$TaskCue == "MaleFemale" & samplecsv$FaceType == "Asian" & samplecsv$ValenceType == "Neutral")] <- "AM/FN" 
+samplecsv$FactorsAll [which(samplecsv$TaskCue == "LikeDislike" & samplecsv$FaceType == "Asian" & samplecsv$ValenceType == "Neutral")] <- "AL/DN" 
+samplecsv$FactorsAll [which(samplecsv$TaskCue == "InOut" & samplecsv$FaceType == "Caucasion" & samplecsv$ValenceType == "Fear")] <- "CI/OF" 
+samplecsv$FactorsAll [which(samplecsv$TaskCue == "MaleFemale" & samplecsv$FaceType == "Caucasion" & samplecsv$ValenceType == "Fear")] <- "CM/FF" 
+samplecsv$FactorsAll [which(samplecsv$TaskCue == "LikeDislike" & samplecsv$FaceType == "Caucasion" & samplecsv$ValenceType == "Fear")] <- "CL/DF" 
+samplecsv$FactorsAll [which(samplecsv$TaskCue == "InOut" & samplecsv$FaceType == "Caucasion" & samplecsv$ValenceType == "Neutral")] <- "CI/ON" 
+samplecsv$FactorsAll [which(samplecsv$TaskCue == "MaleFemale" & samplecsv$FaceType == "Caucasion" & samplecsv$ValenceType == "Neutral")] <- "CM/FN" 
+samplecsv$FactorsAll [which(samplecsv$TaskCue == "LikeDislike" & samplecsv$FaceType == "Caucasion" & samplecsv$ValenceType == "Neutral")] <- "CL/DN" 
 
 
 #Also make columns for 2 of the 3 dependent factors
-AEK0317$ValenceFace <- NA
-AEK0317$ValenceTaskCue <- NA
-AEK0317$FaceTaskCue <- NA
+samplecsv$ValenceFace <- NA
+samplecsv$ValenceTaskCue <- NA
+samplecsv$FaceTaskCue <- NA
 
-AEK0317$ValenceFace [which(AEK0317$ValenceType == "Fear" & AEK0317$FaceType == "Asian")] <- "AsianFear"
-AEK0317$ValenceFace [which(AEK0317$ValenceType == "Fear" & AEK0317$FaceType == "Caucasion")] <- "CaucasionFear"
-AEK0317$ValenceFace [which(AEK0317$ValenceType == "Neutral" & AEK0317$FaceType == "Asian")] <- "AsianNeutral"
-AEK0317$ValenceFace [which(AEK0317$ValenceType == "Neutral" & AEK0317$FaceType == "Caucasion")] <- "CaucasionNeutral"
+samplecsv$ValenceFace [which(samplecsv$ValenceType == "Fear" & samplecsv$FaceType == "Asian")] <- "AsianFear"
+samplecsv$ValenceFace [which(samplecsv$ValenceType == "Fear" & samplecsv$FaceType == "Caucasion")] <- "CaucasionFear"
+samplecsv$ValenceFace [which(samplecsv$ValenceType == "Neutral" & samplecsv$FaceType == "Asian")] <- "AsianNeutral"
+samplecsv$ValenceFace [which(samplecsv$ValenceType == "Neutral" & samplecsv$FaceType == "Caucasion")] <- "CaucasionNeutral"
 #break
-AEK0317$ValenceTaskCue [which(AEK0317$ValenceType == "Fear" & AEK0317$TaskCue == "InOut")] <- "InOutFear"
-AEK0317$ValenceTaskCue [which(AEK0317$ValenceType == "Fear" & AEK0317$TaskCue == "MaleFemale")] <- "MaleFemaleFear"
-AEK0317$ValenceTaskCue [which(AEK0317$ValenceType == "Fear" & AEK0317$TaskCue == "LikeDislike")] <- "LikeDislikeFear"
-AEK0317$ValenceTaskCue [which(AEK0317$ValenceType == "Neutral" & AEK0317$TaskCue == "InOut")] <- "InOutNeutral"
-AEK0317$ValenceTaskCue [which(AEK0317$ValenceType == "Neutral" & AEK0317$TaskCue == "MaleFemale")] <- "MaleFemaleNeutral"
-AEK0317$ValenceTaskCue [which(AEK0317$ValenceType == "Neutral" & AEK0317$TaskCue == "LikeDislike")] <- "LikeDislikeNeutral"
+samplecsv$ValenceTaskCue [which(samplecsv$ValenceType == "Fear" & samplecsv$TaskCue == "InOut")] <- "InOutFear"
+samplecsv$ValenceTaskCue [which(samplecsv$ValenceType == "Fear" & samplecsv$TaskCue == "MaleFemale")] <- "MaleFemaleFear"
+samplecsv$ValenceTaskCue [which(samplecsv$ValenceType == "Fear" & samplecsv$TaskCue == "LikeDislike")] <- "LikeDislikeFear"
+samplecsv$ValenceTaskCue [which(samplecsv$ValenceType == "Neutral" & samplecsv$TaskCue == "InOut")] <- "InOutNeutral"
+samplecsv$ValenceTaskCue [which(samplecsv$ValenceType == "Neutral" & samplecsv$TaskCue == "MaleFemale")] <- "MaleFemaleNeutral"
+samplecsv$ValenceTaskCue [which(samplecsv$ValenceType == "Neutral" & samplecsv$TaskCue == "LikeDislike")] <- "LikeDislikeNeutral"
 #break
-AEK0317$FaceTaskCue [which(AEK0317$FaceType == "Asian" & AEK0317$TaskCue == "InOut")] <- "InOutAsian"
-AEK0317$FaceTaskCue [which(AEK0317$FaceType == "Asian" & AEK0317$TaskCue == "MaleFemale")] <- "MaleFemaleAsian"
-AEK0317$FaceTaskCue [which(AEK0317$FaceType == "Asian" & AEK0317$TaskCue == "LikeDislike")] <- "LikeDislikeAsian"
-AEK0317$FaceTaskCue [which(AEK0317$FaceType == "Caucasion" & AEK0317$TaskCue == "InOut")] <- "InOutCaucasion"
-AEK0317$FaceTaskCue [which(AEK0317$FaceType == "Caucasion" & AEK0317$TaskCue == "MaleFemale")] <- "MaleFemaleCaucasion"
-AEK0317$FaceTaskCue [which(AEK0317$FaceType == "Caucasion" & AEK0317$TaskCue == "LikeDislike")] <- "LikeDislikeCaucasion"
+samplecsv$FaceTaskCue [which(samplecsv$FaceType == "Asian" & samplecsv$TaskCue == "InOut")] <- "InOutAsian"
+samplecsv$FaceTaskCue [which(samplecsv$FaceType == "Asian" & samplecsv$TaskCue == "MaleFemale")] <- "MaleFemaleAsian"
+samplecsv$FaceTaskCue [which(samplecsv$FaceType == "Asian" & samplecsv$TaskCue == "LikeDislike")] <- "LikeDislikeAsian"
+samplecsv$FaceTaskCue [which(samplecsv$FaceType == "Caucasion" & samplecsv$TaskCue == "InOut")] <- "InOutCaucasion"
+samplecsv$FaceTaskCue [which(samplecsv$FaceType == "Caucasion" & samplecsv$TaskCue == "MaleFemale")] <- "MaleFemaleCaucasion"
+samplecsv$FaceTaskCue [which(samplecsv$FaceType == "Caucasion" & samplecsv$TaskCue == "LikeDislike")] <- "LikeDislikeCaucasion"
 
 ##########
 #Label Fixations!
 #FactorsAll
 #MaleFemale
-AEK0317$FactorsAll [which(AEK0317$TaskCue == "PostMaleFemaleFixation" & AEK0317$ValenceType == "PostFearFixation" & AEK0317$FaceType == "PostAsianFixation")] <- "PostMF-F-A-Fixation"
+samplecsv$FactorsAll [which(samplecsv$TaskCue == "PostMaleFemaleFixation" & samplecsv$ValenceType == "PostFearFixation" & samplecsv$FaceType == "PostAsianFixation")] <- "PostMF-F-A-Fixation"
 
-AEK0317$FactorsAll [which(AEK0317$TaskCue == "PostMaleFemaleFixation" & AEK0317$ValenceType == "PostFearFixation" & AEK0317$FaceType == "PostCaucasionFixation")] <- "PostMF-F-C-Fixation"
+samplecsv$FactorsAll [which(samplecsv$TaskCue == "PostMaleFemaleFixation" & samplecsv$ValenceType == "PostFearFixation" & samplecsv$FaceType == "PostCaucasionFixation")] <- "PostMF-F-C-Fixation"
 
-AEK0317$FactorsAll [which(AEK0317$TaskCue == "PostMaleFemaleFixation" & AEK0317$ValenceType == "PostNeutralFixation" & AEK0317$FaceType == "PostAsianFixation")] <- "PostMF-N-A-Fixation"
+samplecsv$FactorsAll [which(samplecsv$TaskCue == "PostMaleFemaleFixation" & samplecsv$ValenceType == "PostNeutralFixation" & samplecsv$FaceType == "PostAsianFixation")] <- "PostMF-N-A-Fixation"
 
-AEK0317$FactorsAll [which(AEK0317$TaskCue == "PostMaleFemaleFixation" & AEK0317$ValenceType == "PostNeutralFixation" & AEK0317$FaceType == "PostCaucasionFixation")] <- "PostMF-N-C-Fixation"
+samplecsv$FactorsAll [which(samplecsv$TaskCue == "PostMaleFemaleFixation" & samplecsv$ValenceType == "PostNeutralFixation" & samplecsv$FaceType == "PostCaucasionFixation")] <- "PostMF-N-C-Fixation"
 #LikeDislike
-AEK0317$FactorsAll [which(AEK0317$TaskCue == "PostLikeDislikeFixation" & AEK0317$ValenceType == "PostFearFixation" & AEK0317$FaceType == "PostAsianFixation")] <- "PostLD-F-A-Fixation"
+samplecsv$FactorsAll [which(samplecsv$TaskCue == "PostLikeDislikeFixation" & samplecsv$ValenceType == "PostFearFixation" & samplecsv$FaceType == "PostAsianFixation")] <- "PostLD-F-A-Fixation"
 
-AEK0317$FactorsAll [which(AEK0317$TaskCue == "PostLikeDislikeFixation" & AEK0317$ValenceType == "PostFearFixation" & AEK0317$FaceType == "PostCaucasionFixation")] <- "PostLD-F-C-Fixation"
+samplecsv$FactorsAll [which(samplecsv$TaskCue == "PostLikeDislikeFixation" & samplecsv$ValenceType == "PostFearFixation" & samplecsv$FaceType == "PostCaucasionFixation")] <- "PostLD-F-C-Fixation"
 
-AEK0317$FactorsAll [which(AEK0317$TaskCue == "PostLikeDislikeFixation" & AEK0317$ValenceType == "PostNeutralFixation" & AEK0317$FaceType == "PostAsianFixation")] <- "PostLD-N-A-Fixation"
+samplecsv$FactorsAll [which(samplecsv$TaskCue == "PostLikeDislikeFixation" & samplecsv$ValenceType == "PostNeutralFixation" & samplecsv$FaceType == "PostAsianFixation")] <- "PostLD-N-A-Fixation"
 
-AEK0317$FactorsAll [which(AEK0317$TaskCue == "PostLikeDislikeFixation" & AEK0317$ValenceType == "PostNeutralFixation" & AEK0317$FaceType == "PostCaucasionFixation")] <- "PostLD-N-C-Fixation"
+samplecsv$FactorsAll [which(samplecsv$TaskCue == "PostLikeDislikeFixation" & samplecsv$ValenceType == "PostNeutralFixation" & samplecsv$FaceType == "PostCaucasionFixation")] <- "PostLD-N-C-Fixation"
 #InOut
-AEK0317$FactorsAll [which(AEK0317$TaskCue == "PostInOutFixation" & AEK0317$ValenceType == "PostFearFixation" & AEK0317$FaceType == "PostAsianFixation")] <- "PostIO-F-A-Fixation"
+samplecsv$FactorsAll [which(samplecsv$TaskCue == "PostInOutFixation" & samplecsv$ValenceType == "PostFearFixation" & samplecsv$FaceType == "PostAsianFixation")] <- "PostIO-F-A-Fixation"
 
-AEK0317$FactorsAll [which(AEK0317$TaskCue == "PostInOutFixation" & AEK0317$ValenceType == "PostFearFixation" & AEK0317$FaceType == "PostCaucasionFixation")] <- "PostIO-F-C-Fixation"
+samplecsv$FactorsAll [which(samplecsv$TaskCue == "PostInOutFixation" & samplecsv$ValenceType == "PostFearFixation" & samplecsv$FaceType == "PostCaucasionFixation")] <- "PostIO-F-C-Fixation"
 
-AEK0317$FactorsAll [which(AEK0317$TaskCue == "PostInOutFixation" & AEK0317$ValenceType == "PostNeutralFixation" & AEK0317$FaceType == "PostAsianFixation")] <- "PostIO-N-A-Fixation"
+samplecsv$FactorsAll [which(samplecsv$TaskCue == "PostInOutFixation" & samplecsv$ValenceType == "PostNeutralFixation" & samplecsv$FaceType == "PostAsianFixation")] <- "PostIO-N-A-Fixation"
 
-AEK0317$FactorsAll [which(AEK0317$TaskCue == "PostInOutFixation" & AEK0317$ValenceType == "PostNeutralFixation" & AEK0317$FaceType == "PostCaucasionFixation")] <- "PostIO-N-C-Fixation"
+samplecsv$FactorsAll [which(samplecsv$TaskCue == "PostInOutFixation" & samplecsv$ValenceType == "PostNeutralFixation" & samplecsv$FaceType == "PostCaucasionFixation")] <- "PostIO-N-C-Fixation"
 #ValenceFace Only
-AEK0317$ValenceFace [which(AEK0317$ValenceType == "PostFearFixation" & AEK0317$FaceType == "PostAsianFixation")] <- "Post-F-A-Fixation"
-AEK0317$ValenceFace [which(AEK0317$ValenceType == "PostFearFixation" & AEK0317$FaceType == "PostCaucasionFixation")] <- "Post-F-C-Fixation"
-AEK0317$ValenceFace [which(AEK0317$ValenceType == "PostNeutralFixation" & AEK0317$FaceType == "PostAsianFixation")] <- "Post-N-A-Fixation"
-AEK0317$ValenceFace [which(AEK0317$ValenceType == "PostNeutralFixation" & AEK0317$FaceType == "PostCaucasionFixation")] <- "Post-N-C-Fixation"
+samplecsv$ValenceFace [which(samplecsv$ValenceType == "PostFearFixation" & samplecsv$FaceType == "PostAsianFixation")] <- "Post-F-A-Fixation"
+samplecsv$ValenceFace [which(samplecsv$ValenceType == "PostFearFixation" & samplecsv$FaceType == "PostCaucasionFixation")] <- "Post-F-C-Fixation"
+samplecsv$ValenceFace [which(samplecsv$ValenceType == "PostNeutralFixation" & samplecsv$FaceType == "PostAsianFixation")] <- "Post-N-A-Fixation"
+samplecsv$ValenceFace [which(samplecsv$ValenceType == "PostNeutralFixation" & samplecsv$FaceType == "PostCaucasionFixation")] <- "Post-N-C-Fixation"
 
 #ValenceTaskCue
 #MaleFemale
-AEK0317$ValenceTaskCue [which(AEK0317$ValenceType == "PostFearFixation" & AEK0317$TaskCue == "PostMaleFemaleFixation")] <- "Post-F-MF-Fixation"
-AEK0317$ValenceTaskCue [which(AEK0317$ValenceType == "PostNeutralFixation" & AEK0317$TaskCue == "PostMaleFemaleFixation")] <- "Post-N-MF-Fixation"
+samplecsv$ValenceTaskCue [which(samplecsv$ValenceType == "PostFearFixation" & samplecsv$TaskCue == "PostMaleFemaleFixation")] <- "Post-F-MF-Fixation"
+samplecsv$ValenceTaskCue [which(samplecsv$ValenceType == "PostNeutralFixation" & samplecsv$TaskCue == "PostMaleFemaleFixation")] <- "Post-N-MF-Fixation"
 #InOut
-AEK0317$ValenceTaskCue [which(AEK0317$ValenceType == "PostFearFixation" & AEK0317$TaskCue == "PostInOutFixation")] <- "Post-F-IO-Fixation"
-AEK0317$ValenceTaskCue [which(AEK0317$ValenceType == "PostNeutralFixation" & AEK0317$TaskCue == "PostInOutFixation")] <- "Post-N-IO-Fixation"
+samplecsv$ValenceTaskCue [which(samplecsv$ValenceType == "PostFearFixation" & samplecsv$TaskCue == "PostInOutFixation")] <- "Post-F-IO-Fixation"
+samplecsv$ValenceTaskCue [which(samplecsv$ValenceType == "PostNeutralFixation" & samplecsv$TaskCue == "PostInOutFixation")] <- "Post-N-IO-Fixation"
 #LikeDislike
-AEK0317$ValenceTaskCue [which(AEK0317$ValenceType == "PostFearFixation" & AEK0317$TaskCue == "PostLikeDislikeFixation")] <- "Post-F-LD-Fixation"
-AEK0317$ValenceTaskCue [which(AEK0317$ValenceType == "PostNeutralFixation" & AEK0317$TaskCue == "PostLikeDislikeFixation")] <- "Post-N-LD-Fixation"
+samplecsv$ValenceTaskCue [which(samplecsv$ValenceType == "PostFearFixation" & samplecsv$TaskCue == "PostLikeDislikeFixation")] <- "Post-F-LD-Fixation"
+samplecsv$ValenceTaskCue [which(samplecsv$ValenceType == "PostNeutralFixation" & samplecsv$TaskCue == "PostLikeDislikeFixation")] <- "Post-N-LD-Fixation"
 
 #FaceTaskCue
 #MaleFemale
-AEK0317$FaceTaskCue [which(AEK0317$FaceType == "PostAsianFixation" & AEK0317$TaskCue == "PostMaleFemaleFixation")] <- "Post-A-MF-Fixation"
-AEK0317$FaceTaskCue [which(AEK0317$FaceType == "PostCaucasionFixation" & AEK0317$TaskCue == "PostMaleFemaleFixation")] <- "Post-C-MF-Fixation"
+samplecsv$FaceTaskCue [which(samplecsv$FaceType == "PostAsianFixation" & samplecsv$TaskCue == "PostMaleFemaleFixation")] <- "Post-A-MF-Fixation"
+samplecsv$FaceTaskCue [which(samplecsv$FaceType == "PostCaucasionFixation" & samplecsv$TaskCue == "PostMaleFemaleFixation")] <- "Post-C-MF-Fixation"
 #InOut
-AEK0317$FaceTaskCue [which(AEK0317$FaceType == "PostAsianFixation" & AEK0317$TaskCue == "PostInOutFixation")] <- "Post-A-IO-Fixation"
-AEK0317$FaceTaskCue [which(AEK0317$FaceType == "PostCaucasionFixation" & AEK0317$TaskCue == "PostInOutFixation")] <- "Post-C-IO-Fixation"
+samplecsv$FaceTaskCue [which(samplecsv$FaceType == "PostAsianFixation" & samplecsv$TaskCue == "PostInOutFixation")] <- "Post-A-IO-Fixation"
+samplecsv$FaceTaskCue [which(samplecsv$FaceType == "PostCaucasionFixation" & samplecsv$TaskCue == "PostInOutFixation")] <- "Post-C-IO-Fixation"
 #LikeDislike
-AEK0317$FaceTaskCue [which(AEK0317$FaceType == "PostAsianFixation" & AEK0317$TaskCue == "PostLikeDislikeFixation")] <- "Post-A-LD-Fixation"
-AEK0317$FaceTaskCue [which(AEK0317$FaceType == "PostCaucasionFixation" & AEK0317$TaskCue == "PostLikeDislikeFixation")] <- "Post-C-LD-Fixation"
+samplecsv$FaceTaskCue [which(samplecsv$FaceType == "PostAsianFixation" & samplecsv$TaskCue == "PostLikeDislikeFixation")] <- "Post-A-LD-Fixation"
+samplecsv$FaceTaskCue [which(samplecsv$FaceType == "PostCaucasionFixation" & samplecsv$TaskCue == "PostLikeDislikeFixation")] <- "Post-C-LD-Fixation"
 
 
 #label pre stimuli fixations too
-AEK0317$FactorsAll [which(AEK0317$TaskCue == "PreMaleFemaleFixation" & AEK0317$ValenceType == "PreFearFixation" & AEK0317$FaceType == "PreAsianFixation")] <- "PreMF-F-A-Fixation"
+samplecsv$FactorsAll [which(samplecsv$TaskCue == "PreMaleFemaleFixation" & samplecsv$ValenceType == "PreFearFixation" & samplecsv$FaceType == "PreAsianFixation")] <- "PreMF-F-A-Fixation"
 
-AEK0317$FactorsAll [which(AEK0317$TaskCue == "PreMaleFemaleFixation" & AEK0317$ValenceType == "PreFearFixation" & AEK0317$FaceType == "PreCaucasionFixation")] <- "PreMF-F-C-Fixation"
+samplecsv$FactorsAll [which(samplecsv$TaskCue == "PreMaleFemaleFixation" & samplecsv$ValenceType == "PreFearFixation" & samplecsv$FaceType == "PreCaucasionFixation")] <- "PreMF-F-C-Fixation"
 
-AEK0317$FactorsAll [which(AEK0317$TaskCue == "PreMaleFemaleFixation" & AEK0317$ValenceType == "PreNeutralFixation" & AEK0317$FaceType == "PreAsianFixation")] <- "PreMF-N-A-Fixation"
+samplecsv$FactorsAll [which(samplecsv$TaskCue == "PreMaleFemaleFixation" & samplecsv$ValenceType == "PreNeutralFixation" & samplecsv$FaceType == "PreAsianFixation")] <- "PreMF-N-A-Fixation"
 
-AEK0317$FactorsAll [which(AEK0317$TaskCue == "PreMaleFemaleFixation" & AEK0317$ValenceType == "PreNeutralFixation" & AEK0317$FaceType == "PreCaucasionFixation")] <- "PreMF-N-C-Fixation"
+samplecsv$FactorsAll [which(samplecsv$TaskCue == "PreMaleFemaleFixation" & samplecsv$ValenceType == "PreNeutralFixation" & samplecsv$FaceType == "PreCaucasionFixation")] <- "PreMF-N-C-Fixation"
 #LikeDislike
-AEK0317$FactorsAll [which(AEK0317$TaskCue == "PreLikeDislikeFixation" & AEK0317$ValenceType == "PreFearFixation" & AEK0317$FaceType == "PreAsianFixation")] <- "PreLD-F-A-Fixation"
+samplecsv$FactorsAll [which(samplecsv$TaskCue == "PreLikeDislikeFixation" & samplecsv$ValenceType == "PreFearFixation" & samplecsv$FaceType == "PreAsianFixation")] <- "PreLD-F-A-Fixation"
 
-AEK0317$FactorsAll [which(AEK0317$TaskCue == "PreLikeDislikeFixation" & AEK0317$ValenceType == "PreFearFixation" & AEK0317$FaceType == "PreCaucasionFixation")] <- "PreLD-F-C-Fixation"
+samplecsv$FactorsAll [which(samplecsv$TaskCue == "PreLikeDislikeFixation" & samplecsv$ValenceType == "PreFearFixation" & samplecsv$FaceType == "PreCaucasionFixation")] <- "PreLD-F-C-Fixation"
 
-AEK0317$FactorsAll [which(AEK0317$TaskCue == "PreLikeDislikeFixation" & AEK0317$ValenceType == "PreNeutralFixation" & AEK0317$FaceType == "PreAsianFixation")] <- "PreLD-N-A-Fixation"
+samplecsv$FactorsAll [which(samplecsv$TaskCue == "PreLikeDislikeFixation" & samplecsv$ValenceType == "PreNeutralFixation" & samplecsv$FaceType == "PreAsianFixation")] <- "PreLD-N-A-Fixation"
 
-AEK0317$FactorsAll [which(AEK0317$TaskCue == "PreLikeDislikeFixation" & AEK0317$ValenceType == "PreNeutralFixation" & AEK0317$FaceType == "PreCaucasionFixation")] <- "PreLD-N-C-Fixation"
+samplecsv$FactorsAll [which(samplecsv$TaskCue == "PreLikeDislikeFixation" & samplecsv$ValenceType == "PreNeutralFixation" & samplecsv$FaceType == "PreCaucasionFixation")] <- "PreLD-N-C-Fixation"
 #InOut
-AEK0317$FactorsAll [which(AEK0317$TaskCue == "PreInOutFixation" & AEK0317$ValenceType == "PreFearFixation" & AEK0317$FaceType == "PreAsianFixation")] <- "PreIO-F-A-Fixation"
+samplecsv$FactorsAll [which(samplecsv$TaskCue == "PreInOutFixation" & samplecsv$ValenceType == "PreFearFixation" & samplecsv$FaceType == "PreAsianFixation")] <- "PreIO-F-A-Fixation"
 
-AEK0317$FactorsAll [which(AEK0317$TaskCue == "PreInOutFixation" & AEK0317$ValenceType == "PreFearFixation" & AEK0317$FaceType == "PreCaucasionFixation")] <- "PreIO-F-C-Fixation"
+samplecsv$FactorsAll [which(samplecsv$TaskCue == "PreInOutFixation" & samplecsv$ValenceType == "PreFearFixation" & samplecsv$FaceType == "PreCaucasionFixation")] <- "PreIO-F-C-Fixation"
 
-AEK0317$FactorsAll [which(AEK0317$TaskCue == "PreInOutFixation" & AEK0317$ValenceType == "PreNeutralFixation" & AEK0317$FaceType == "PreAsianFixation")] <- "PreIO-N-A-Fixation"
+samplecsv$FactorsAll [which(samplecsv$TaskCue == "PreInOutFixation" & samplecsv$ValenceType == "PreNeutralFixation" & samplecsv$FaceType == "PreAsianFixation")] <- "PreIO-N-A-Fixation"
 
-AEK0317$FactorsAll [which(AEK0317$TaskCue == "PreInOutFixation" & AEK0317$ValenceType == "PreNeutralFixation" & AEK0317$FaceType == "PreCaucasionFixation")] <- "PreIO-N-C-Fixation"
+samplecsv$FactorsAll [which(samplecsv$TaskCue == "PreInOutFixation" & samplecsv$ValenceType == "PreNeutralFixation" & samplecsv$FaceType == "PreCaucasionFixation")] <- "PreIO-N-C-Fixation"
 #ValenceFace Only
-AEK0317$ValenceFace [which(AEK0317$ValenceType == "PreFearFixation" & AEK0317$FaceType == "PreAsianFixation")] <- "Pre-F-A-Fixation"
-AEK0317$ValenceFace [which(AEK0317$ValenceType == "PreFearFixation" & AEK0317$FaceType == "PreCaucasionFixation")] <- "Pre-F-C-Fixation"
-AEK0317$ValenceFace [which(AEK0317$ValenceType == "PreNeutralFixation" & AEK0317$FaceType == "PreAsianFixation")] <- "Pre-N-A-Fixation"
-AEK0317$ValenceFace [which(AEK0317$ValenceType == "PreNeutralFixation" & AEK0317$FaceType == "PreCaucasionFixation")] <- "Pre-N-C-Fixation"
+samplecsv$ValenceFace [which(samplecsv$ValenceType == "PreFearFixation" & samplecsv$FaceType == "PreAsianFixation")] <- "Pre-F-A-Fixation"
+samplecsv$ValenceFace [which(samplecsv$ValenceType == "PreFearFixation" & samplecsv$FaceType == "PreCaucasionFixation")] <- "Pre-F-C-Fixation"
+samplecsv$ValenceFace [which(samplecsv$ValenceType == "PreNeutralFixation" & samplecsv$FaceType == "PreAsianFixation")] <- "Pre-N-A-Fixation"
+samplecsv$ValenceFace [which(samplecsv$ValenceType == "PreNeutralFixation" & samplecsv$FaceType == "PreCaucasionFixation")] <- "Pre-N-C-Fixation"
 #ValenceTaskCue
 #MaleFemale
-AEK0317$ValenceTaskCue [which(AEK0317$ValenceType == "PreFearFixation" & AEK0317$TaskCue == "PreMaleFemaleFixation")] <- "Pre-F-MF-Fixation"
-AEK0317$ValenceTaskCue [which(AEK0317$ValenceType == "PreNeutralFixation" & AEK0317$TaskCue == "PreMaleFemaleFixation")] <- "Pre-N-MF-Fixation"
+samplecsv$ValenceTaskCue [which(samplecsv$ValenceType == "PreFearFixation" & samplecsv$TaskCue == "PreMaleFemaleFixation")] <- "Pre-F-MF-Fixation"
+samplecsv$ValenceTaskCue [which(samplecsv$ValenceType == "PreNeutralFixation" & samplecsv$TaskCue == "PreMaleFemaleFixation")] <- "Pre-N-MF-Fixation"
 #InOut
-AEK0317$ValenceTaskCue [which(AEK0317$ValenceType == "PreFearFixation" & AEK0317$TaskCue == "PreInOutFixation")] <- "Pre-F-IO-Fixation"
-AEK0317$ValenceTaskCue [which(AEK0317$ValenceType == "PreNeutralFixation" & AEK0317$TaskCue == "PreInOutFixation")] <- "Pre-N-IO-Fixation"
+samplecsv$ValenceTaskCue [which(samplecsv$ValenceType == "PreFearFixation" & samplecsv$TaskCue == "PreInOutFixation")] <- "Pre-F-IO-Fixation"
+samplecsv$ValenceTaskCue [which(samplecsv$ValenceType == "PreNeutralFixation" & samplecsv$TaskCue == "PreInOutFixation")] <- "Pre-N-IO-Fixation"
 #LikeDislike
-AEK0317$ValenceTaskCue [which(AEK0317$ValenceType == "PreFearFixation" & AEK0317$TaskCue == "PreLikeDislikeFixation")] <- "Pre-F-LD-Fixation"
-AEK0317$ValenceTaskCue [which(AEK0317$ValenceType == "PreNeutralFixation" & AEK0317$TaskCue == "PreLikeDislikeFixation")] <- "Pre-N-LD-Fixation"
+samplecsv$ValenceTaskCue [which(samplecsv$ValenceType == "PreFearFixation" & samplecsv$TaskCue == "PreLikeDislikeFixation")] <- "Pre-F-LD-Fixation"
+samplecsv$ValenceTaskCue [which(samplecsv$ValenceType == "PreNeutralFixation" & samplecsv$TaskCue == "PreLikeDislikeFixation")] <- "Pre-N-LD-Fixation"
 
 #FaceTaskCue
 #MaleFemale
-AEK0317$FaceTaskCue [which(AEK0317$FaceType == "PreAsianFixation" & AEK0317$TaskCue == "PreMaleFemaleFixation")] <- "Pre-A-MF-Fixation"
-AEK0317$FaceTaskCue [which(AEK0317$FaceType == "PreCaucasionFixation" & AEK0317$TaskCue == "PreMaleFemaleFixation")] <- "Pre-C-MF-Fixation"
+samplecsv$FaceTaskCue [which(samplecsv$FaceType == "PreAsianFixation" & samplecsv$TaskCue == "PreMaleFemaleFixation")] <- "Pre-A-MF-Fixation"
+samplecsv$FaceTaskCue [which(samplecsv$FaceType == "PreCaucasionFixation" & samplecsv$TaskCue == "PreMaleFemaleFixation")] <- "Pre-C-MF-Fixation"
 #InOut
-AEK0317$FaceTaskCue [which(AEK0317$FaceType == "PreAsianFixation" & AEK0317$TaskCue == "PreInOutFixation")] <- "Pre-A-IO-Fixation"
-AEK0317$FaceTaskCue [which(AEK0317$FaceType == "PreCaucasionFixation" & AEK0317$TaskCue == "PreInOutFixation")] <- "Pre-C-IO-Fixation"
+samplecsv$FaceTaskCue [which(samplecsv$FaceType == "PreAsianFixation" & samplecsv$TaskCue == "PreInOutFixation")] <- "Pre-A-IO-Fixation"
+samplecsv$FaceTaskCue [which(samplecsv$FaceType == "PreCaucasionFixation" & samplecsv$TaskCue == "PreInOutFixation")] <- "Pre-C-IO-Fixation"
 #LikeDislike
-AEK0317$FaceTaskCue [which(AEK0317$FaceType == "PreAsianFixation" & AEK0317$TaskCue == "PreLikeDislikeFixation")] <- "Pre-A-LD-Fixation"
-AEK0317$FaceTaskCue [which(AEK0317$FaceType == "PreCaucasionFixation" & AEK0317$TaskCue == "PreLikeDislikeFixation")] <- "Pre-C-LD-Fixation"
+samplecsv$FaceTaskCue [which(samplecsv$FaceType == "PreAsianFixation" & samplecsv$TaskCue == "PreLikeDislikeFixation")] <- "Pre-A-LD-Fixation"
+samplecsv$FaceTaskCue [which(samplecsv$FaceType == "PreCaucasionFixation" & samplecsv$TaskCue == "PreLikeDislikeFixation")] <- "Pre-C-LD-Fixation"
 
 #Copy baseline fixations as well
 
-AEK0317$FactorsAll [which(is.na(AEK0317$FactorsAll))] <- "BaselineFixation"
-AEK0317$ValenceTaskCue [which(is.na(AEK0317$ValenceTaskCue))] <- "BaselineFixation"
-AEK0317$ValenceFace [which(is.na(AEK0317$ValenceFace))] <- "BaselineFixation"
-AEK0317$FaceTaskCue [which(is.na(AEK0317$FaceTaskCue))] <- "BaselineFixation"
+samplecsv$FactorsAll [which(is.na(samplecsv$FactorsAll))] <- "BaselineFixation"
+samplecsv$ValenceTaskCue [which(is.na(samplecsv$ValenceTaskCue))] <- "BaselineFixation"
+samplecsv$ValenceFace [which(is.na(samplecsv$ValenceFace))] <- "BaselineFixation"
+samplecsv$FaceTaskCue [which(is.na(samplecsv$FaceTaskCue))] <- "BaselineFixation"
 
 #save csv
-write.table(AEK0317,file="/Volumes/NO NAME/Csvgroup3-27/CSEyeAEK0317.csv",sep=",",row.names=F)
+write.table(samplecsv,file="/Volumes/NO NAME/Csvgroup3-27/CSEyesamplecsv.csv",sep=",",row.names=F)
 
 #Now clean rows with data data
 library(plyr)
 library(reshape)
 ##########
 #count total number of rows, keep a tally so you can calculate the percentages of usable data
-count(AEK0317$DataType) 
+count(samplecsv$DataType) 
 #count total during stimulus viewing
-count(AEK0317$TaskCue)
-count(AEK0317$ValenceType)
-count(AEK0317$FaceType)
+count(samplecsv$TaskCue)
+count(samplecsv$ValenceType)
+count(samplecsv$FaceType)
 #delete rows with contain any data point that is outside of bounds
-AEK0317 <- AEK0317[!(AEK0317$X_Gaze>1024 | AEK0317$X_Gaze<0 | AEK0317$Y_Gaze>768 | AEK0317$Y_Gaze<0),]
+samplecsv <- samplecsv[!(samplecsv$X_Gaze>1024 | samplecsv$X_Gaze<0 | samplecsv$Y_Gaze>768 | samplecsv$Y_Gaze<0),]
 #recount so you can calculate percentage of data used
-count(AEK0317$DataType)
-count(AEK0317$TaskCue )
+count(samplecsv$DataType)
+count(samplecsv$TaskCue )
 
 #delete rows in .csv is value in column X_Gaze is sequentially repreated
-AEK0317v2 <- AEK0317[which(!duplicated(AEK0317$X_Gaze)] <- 
-  AEK0317v3 <- AEK0317v2[which(!duplicated(AEK0317v2$Y_Gaze)] <- 
+samplecsvv2 <- samplecsv[which(!duplicated(samplecsv$X_Gaze)] <- 
+  samplecsvv3 <- samplecsvv2[which(!duplicated(samplecsvv2$Y_Gaze)] <- 
   #double check
-  which(duplicated(AEK0317v3$X_Gaze),)
+  which(duplicated(samplecsvv3$X_Gaze),)
 #count one last time
-count(AEK0317v3$DataType)
-count(AEK0317v3$TaskCue )
+count(samplecsvv3$DataType)
+count(samplecsvv3$TaskCue )
 
-write.table(AEK0317v3,file="/Volumes/NO NAME/Csvgroup3-27/CSEyeAEK0317.csv",sep=",",row.names=F)
+write.table(samplecsvv3,file="/Volumes/NO NAME/Csvgroup3-27/CSEyesamplecsv.csv",sep=",",row.names=F)
 
 #delete rows with NAs in TaskCue/ValenceType/FaceType
 #These are inter block fixation where the subjects were instructed to rest. Some stretched, or left the chin rest in general
-AEK0317 <- read.csv("/Volumes/NO NAME/Csvgroup3-27/CSEyeAEK0317.csv")
+samplecsv <- read.csv("/Volumes/NO NAME/Csvgroup3-27/CSEyesamplecsv.csv")
 
-AEK0317 <- AEK0317[complete.cases(AEK0317[,12:14]),]
-count(AEK0317$DataType)
-count(AEK0317$TaskCue)
+samplecsv <- samplecsv[complete.cases(samplecsv[,12:14]),]
+count(samplecsv$DataType)
+count(samplecsv$TaskCue)
 #Make new columns based on combined dependent factors
 
 
 #After creating columns distributing the fixations and the stimuli, it is helpful for visualization to inspect them as one variable. 
 
-AEK0317 <- read.csv("/Volumes/NO NAME/Csvgroup3-27/CSEyeAEK0317.csv")
+samplecsv <- read.csv("/Volumes/NO NAME/Csvgroup3-27/CSEyesamplecsv.csv")
 
-AEK0317$TaskCueNew <- NA
-AEK0317$ValenceTypeNew <- NA
-AEK0317$FaceTypeNew <- NA
-AEK0317$ValenceFaceNew <- NA
+samplecsv$TaskCueNew <- NA
+samplecsv$ValenceTypeNew <- NA
+samplecsv$FaceTypeNew <- NA
+samplecsv$ValenceFaceNew <- NA
 
-AEK0317$TaskCueNew [which(AEK0317$TaskCue == "InOut" | AEK0317$TaskCue == "PostInOutFixation" | AEK0317$TaskCue == "PreInOutFixation")] <- 'InOut'
+samplecsv$TaskCueNew [which(samplecsv$TaskCue == "InOut" | samplecsv$TaskCue == "PostInOutFixation" | samplecsv$TaskCue == "PreInOutFixation")] <- 'InOut'
 
-AEK0317$TaskCueNew [which(AEK0317$TaskCue == "LikeDislike" | AEK0317$TaskCue == "PostLikeDislikeFixation" | AEK0317$TaskCue == "PreLikeDislikeFixation")] <- 'LikeDislike'
+samplecsv$TaskCueNew [which(samplecsv$TaskCue == "LikeDislike" | samplecsv$TaskCue == "PostLikeDislikeFixation" | samplecsv$TaskCue == "PreLikeDislikeFixation")] <- 'LikeDislike'
 
-AEK0317$TaskCueNew [which(AEK0317$TaskCue == "MaleFemale" | AEK0317$TaskCue == "PostMaleFemaleFixation" | AEK0317$TaskCue == "PreMaleFemaleFixation")] <- 'MaleFemale'
-
-
-AEK0317$ValenceTypeNew [which(AEK0317$ValenceType == "Fear" | AEK0317$ValenceType == "PostFearFixation" | AEK0317$ValenceType == "PreFearFixation")] <- 'Fear'
-
-AEK0317$ValenceTypeNew [which(AEK0317$ValenceType == "Neutral" | AEK0317$ValenceType == "PostNeutralFixation" | AEK0317$ValenceType == "PreNeutralFixation")] <- 'Neutral'
+samplecsv$TaskCueNew [which(samplecsv$TaskCue == "MaleFemale" | samplecsv$TaskCue == "PostMaleFemaleFixation" | samplecsv$TaskCue == "PreMaleFemaleFixation")] <- 'MaleFemale'
 
 
-AEK0317$FaceTypeNew [which(AEK0317$FaceType == "Asian" | AEK0317$FaceType == "PostAsianFixation" | AEK0317$FaceType == "PreAsianFixation")] <- 'Asian'
+samplecsv$ValenceTypeNew [which(samplecsv$ValenceType == "Fear" | samplecsv$ValenceType == "PostFearFixation" | samplecsv$ValenceType == "PreFearFixation")] <- 'Fear'
+
+samplecsv$ValenceTypeNew [which(samplecsv$ValenceType == "Neutral" | samplecsv$ValenceType == "PostNeutralFixation" | samplecsv$ValenceType == "PreNeutralFixation")] <- 'Neutral'
 
 
-AEK0317$FaceTypeNew [which(AEK0317$FaceType == "Caucasion" | AEK0317$FaceType == "PostCaucasionFixation" | AEK0317$FaceType == "PreCaucasionFixation")] <- 'Caucasion'
+samplecsv$FaceTypeNew [which(samplecsv$FaceType == "Asian" | samplecsv$FaceType == "PostAsianFixation" | samplecsv$FaceType == "PreAsianFixation")] <- 'Asian'
 
 
-AEK0317$ValenceFaceNew [which(AEK0317$ValenceFace == "CaucasionFear" | AEK0317$ValenceFace == "Post-F-C-Fixation" | AEK0317$ValenceFace == "Pre-F-C-Fixation")] <- 'CaucasionFear'
-
-AEK0317$ValenceFaceNew [which(AEK0317$ValenceFace == "CaucasionNeutral" | AEK0317$ValenceFace == "Post-N-C-Fixation" | AEK0317$ValenceFace == "Pre-N-C-Fixation")] <- 'CaucasionNeutral'
-
-AEK0317$ValenceFaceNew [which(AEK0317$ValenceFace == "AsianFear" | AEK0317$ValenceFace == "Post-F-A-Fixation" | AEK0317$ValenceFace == "Pre-F-A-Fixation")] <- 'AsianFear'
-
-AEK0317$ValenceFaceNew [which(AEK0317$ValenceFace == "AsianNeutral" | AEK0317$ValenceFace == "Post-N-A-Fixation" | AEK0317$ValenceFace == "Pre-N-A-Fixation")] <- 'AsianNeutral'
+samplecsv$FaceTypeNew [which(samplecsv$FaceType == "Caucasion" | samplecsv$FaceType == "PostCaucasionFixation" | samplecsv$FaceType == "PreCaucasionFixation")] <- 'Caucasion'
 
 
+samplecsv$ValenceFaceNew [which(samplecsv$ValenceFace == "CaucasionFear" | samplecsv$ValenceFace == "Post-F-C-Fixation" | samplecsv$ValenceFace == "Pre-F-C-Fixation")] <- 'CaucasionFear'
 
-write.table(AEK0317,file="/Volumes/NO NAME/Csvgroup3-27/CSEyeAEK0317.csv",sep=",",row.names=F)
+samplecsv$ValenceFaceNew [which(samplecsv$ValenceFace == "CaucasionNeutral" | samplecsv$ValenceFace == "Post-N-C-Fixation" | samplecsv$ValenceFace == "Pre-N-C-Fixation")] <- 'CaucasionNeutral'
 
-AEK0317 <- read.csv("/Volumes/NO NAME/Csvgroup3-27/CSEyeAEK0317.csv")
+samplecsv$ValenceFaceNew [which(samplecsv$ValenceFace == "AsianFear" | samplecsv$ValenceFace == "Post-F-A-Fixation" | samplecsv$ValenceFace == "Pre-F-A-Fixation")] <- 'AsianFear'
+
+samplecsv$ValenceFaceNew [which(samplecsv$ValenceFace == "AsianNeutral" | samplecsv$ValenceFace == "Post-N-A-Fixation" | samplecsv$ValenceFace == "Pre-N-A-Fixation")] <- 'AsianNeutral'
+
+
+
+write.table(samplecsv,file="/Volumes/NO NAME/Csvgroup3-27/CSEyesamplecsv.csv",sep=",",row.names=F)
+
+samplecsv <- read.csv("/Volumes/NO NAME/Csvgroup3-27/CSEyesamplecsv.csv")
 
 
 #make a new column that defines subject
-AEK0317$SubjectId <- "AEK0317"
-AEK0317$Trial <- NA
+samplecsv$SubjectId <- "samplecsv"
+samplecsv$Trial <- NA
 
 
-AEK0317$Trial [which(AEK0317$MarkerNumber>=1 & AEK0317$MarkerNumber<2)] <- 1
-AEK0317$Trial [which(AEK0317$MarkerNumber>=2 & AEK0317$MarkerNumber<3)] <- 2
-AEK0317$Trial [which(AEK0317$MarkerNumber>=3 & AEK0317$MarkerNumber<4)] <- 3
-AEK0317$Trial [which(AEK0317$MarkerNumber>=4 & AEK0317$MarkerNumber<5)] <- 4
-AEK0317$Trial [which(AEK0317$MarkerNumber>=5 & AEK0317$MarkerNumber<6)] <- 5
-AEK0317$Trial [which(AEK0317$MarkerNumber>=6 & AEK0317$MarkerNumber<7)] <- 6
-AEK0317$Trial [which(AEK0317$MarkerNumber>=7 & AEK0317$MarkerNumber<8)] <- 7
-AEK0317$Trial [which(AEK0317$MarkerNumber>=8 & AEK0317$MarkerNumber<9)] <- 8
-AEK0317$Trial [which(AEK0317$MarkerNumber>=9 & AEK0317$MarkerNumber<10)] <- 9
-AEK0317$Trial [which(AEK0317$MarkerNumber>=10 & AEK0317$MarkerNumber<11)] <- 10
-AEK0317$Trial [which(AEK0317$MarkerNumber>=11 & AEK0317$MarkerNumber<12)] <- 11
-AEK0317$Trial [which(AEK0317$MarkerNumber>=12 & AEK0317$MarkerNumber<13)] <- 12
-AEK0317$Trial [which(AEK0317$MarkerNumber>=13 & AEK0317$MarkerNumber<14)] <- 13
-AEK0317$Trial [which(AEK0317$MarkerNumber>=14 & AEK0317$MarkerNumber<15)] <- 14
-AEK0317$Trial [which(AEK0317$MarkerNumber>=15 & AEK0317$MarkerNumber<16)] <- 15
-AEK0317$Trial [which(AEK0317$MarkerNumber>=16 & AEK0317$MarkerNumber<17)] <- 16
-AEK0317$Trial [which(AEK0317$MarkerNumber>=17 & AEK0317$MarkerNumber<18)] <- 17
-AEK0317$Trial [which(AEK0317$MarkerNumber>=18 & AEK0317$MarkerNumber<19)] <- 18
-AEK0317$Trial [which(AEK0317$MarkerNumber>=19 & AEK0317$MarkerNumber<20)] <- 19
-AEK0317$Trial [which(AEK0317$MarkerNumber>=20 & AEK0317$MarkerNumber<21)] <- 20
-AEK0317$Trial [which(AEK0317$MarkerNumber>=21 & AEK0317$MarkerNumber<22)] <- 21
-AEK0317$Trial [which(AEK0317$MarkerNumber>=22 & AEK0317$MarkerNumber<23)] <- 22
-AEK0317$Trial [which(AEK0317$MarkerNumber>=23 & AEK0317$MarkerNumber<24)] <- 23
-AEK0317$Trial [which(AEK0317$MarkerNumber>=24 & AEK0317$MarkerNumber<25)] <- 24
-AEK0317$Trial [which(AEK0317$MarkerNumber>=25 & AEK0317$MarkerNumber<26)] <- 25
-AEK0317$Trial [which(AEK0317$MarkerNumber>=26 & AEK0317$MarkerNumber<27)] <- 26
-AEK0317$Trial [which(AEK0317$MarkerNumber>=27 & AEK0317$MarkerNumber<28)] <- 27
-AEK0317$Trial [which(AEK0317$MarkerNumber>=28 & AEK0317$MarkerNumber<29)] <- 28
-AEK0317$Trial [which(AEK0317$MarkerNumber>=29 & AEK0317$MarkerNumber<30)] <- 29
-AEK0317$Trial [which(AEK0317$MarkerNumber>=30 & AEK0317$MarkerNumber<31)] <- 30
-AEK0317$Trial [which(AEK0317$MarkerNumber>=31 & AEK0317$MarkerNumber<32)] <- 31
-AEK0317$Trial [which(AEK0317$MarkerNumber>=32 & AEK0317$MarkerNumber<33)] <- 32
-AEK0317$Trial [which(AEK0317$MarkerNumber>=33 & AEK0317$MarkerNumber<34)] <- 33
-AEK0317$Trial [which(AEK0317$MarkerNumber>=34 & AEK0317$MarkerNumber<35)] <- 34
-AEK0317$Trial [which(AEK0317$MarkerNumber>=35 & AEK0317$MarkerNumber<36)] <- 35
-AEK0317$Trial [which(AEK0317$MarkerNumber>=36 & AEK0317$MarkerNumber<37)] <- 36
-AEK0317$Trial [which(AEK0317$MarkerNumber>=37 & AEK0317$MarkerNumber<38)] <- 37
-AEK0317$Trial [which(AEK0317$MarkerNumber>=38 & AEK0317$MarkerNumber<39)] <- 38
-AEK0317$Trial [which(AEK0317$MarkerNumber>=39 & AEK0317$MarkerNumber<40)] <- 39
-AEK0317$Trial [which(AEK0317$MarkerNumber>=40 & AEK0317$MarkerNumber<41)] <- 40
-AEK0317$Trial [which(AEK0317$MarkerNumber>=41 & AEK0317$MarkerNumber<42)] <- 41
-AEK0317$Trial [which(AEK0317$MarkerNumber>=42 & AEK0317$MarkerNumber<43)] <- 42
-AEK0317$Trial [which(AEK0317$MarkerNumber>=43 & AEK0317$MarkerNumber<44)] <- 43
-AEK0317$Trial [which(AEK0317$MarkerNumber>=44 & AEK0317$MarkerNumber<45)] <- 44
-AEK0317$Trial [which(AEK0317$MarkerNumber>=45 & AEK0317$MarkerNumber<46)] <- 45
-AEK0317$Trial [which(AEK0317$MarkerNumber>=46 & AEK0317$MarkerNumber<47)] <- 46
-AEK0317$Trial [which(AEK0317$MarkerNumber>=47 & AEK0317$MarkerNumber<48)] <- 47
-AEK0317$Trial [which(AEK0317$MarkerNumber>=48 & AEK0317$MarkerNumber<49)] <- 48
-AEK0317$Trial [which(AEK0317$MarkerNumber>=49 & AEK0317$MarkerNumber<50)] <- 49
-AEK0317$Trial [which(AEK0317$MarkerNumber>=50 & AEK0317$MarkerNumber<51)] <- 50
-AEK0317$Trial [which(AEK0317$MarkerNumber>=51 & AEK0317$MarkerNumber<52)] <- 51
-AEK0317$Trial [which(AEK0317$MarkerNumber>=52 & AEK0317$MarkerNumber<53)] <- 52
-AEK0317$Trial [which(AEK0317$MarkerNumber>=53 & AEK0317$MarkerNumber<54)] <- 53
-AEK0317$Trial [which(AEK0317$MarkerNumber>=54 & AEK0317$MarkerNumber<55)] <- 54
-AEK0317$Trial [which(AEK0317$MarkerNumber>=55 & AEK0317$MarkerNumber<56)] <- 55
-AEK0317$Trial [which(AEK0317$MarkerNumber>=56 & AEK0317$MarkerNumber<57)] <- 56
-AEK0317$Trial [which(AEK0317$MarkerNumber>=57 & AEK0317$MarkerNumber<58)] <- 57
-AEK0317$Trial [which(AEK0317$MarkerNumber>=58 & AEK0317$MarkerNumber<59)] <- 58
-AEK0317$Trial [which(AEK0317$MarkerNumber>=59 & AEK0317$MarkerNumber<60)] <- 59
-AEK0317$Trial [which(AEK0317$MarkerNumber>=60 & AEK0317$MarkerNumber<61)] <- 60
-AEK0317$Trial [which(AEK0317$MarkerNumber>=61 & AEK0317$MarkerNumber<62)] <- 61
-AEK0317$Trial [which(AEK0317$MarkerNumber>=62 & AEK0317$MarkerNumber<63)] <- 62
-AEK0317$Trial [which(AEK0317$MarkerNumber>=63 & AEK0317$MarkerNumber<64)] <- 63
-AEK0317$Trial [which(AEK0317$MarkerNumber>=64 & AEK0317$MarkerNumber<65)] <- 64
-AEK0317$Trial [which(AEK0317$MarkerNumber>=65 & AEK0317$MarkerNumber<66)] <- 65
-AEK0317$Trial [which(AEK0317$MarkerNumber>=66 & AEK0317$MarkerNumber<67)] <- 66
-AEK0317$Trial [which(AEK0317$MarkerNumber>=67 & AEK0317$MarkerNumber<68)] <- 67
-AEK0317$Trial [which(AEK0317$MarkerNumber>=68 & AEK0317$MarkerNumber<69)] <- 68
-AEK0317$Trial [which(AEK0317$MarkerNumber>=69 & AEK0317$MarkerNumber<70)] <- 69
-AEK0317$Trial [which(AEK0317$MarkerNumber>=70 & AEK0317$MarkerNumber<71)] <- 70
-AEK0317$Trial [which(AEK0317$MarkerNumber>=71 & AEK0317$MarkerNumber<72)] <- 71
-AEK0317$Trial [which(AEK0317$MarkerNumber>=72 & AEK0317$MarkerNumber<73)] <- 72
-AEK0317$Trial [which(AEK0317$MarkerNumber>=73 & AEK0317$MarkerNumber<74)] <- 73
-AEK0317$Trial [which(AEK0317$MarkerNumber>=74 & AEK0317$MarkerNumber<75)] <- 74
-AEK0317$Trial [which(AEK0317$MarkerNumber>=75 & AEK0317$MarkerNumber<76)] <- 75
-AEK0317$Trial [which(AEK0317$MarkerNumber>=76 & AEK0317$MarkerNumber<77)] <- 76
-AEK0317$Trial [which(AEK0317$MarkerNumber>=77 & AEK0317$MarkerNumber<78)] <- 77
-AEK0317$Trial [which(AEK0317$MarkerNumber>=78 & AEK0317$MarkerNumber<79)] <- 78
-AEK0317$Trial [which(AEK0317$MarkerNumber>=79 & AEK0317$MarkerNumber<80)] <- 79
-AEK0317$Trial [which(AEK0317$MarkerNumber>=80 & AEK0317$MarkerNumber<81)] <- 80
-AEK0317$Trial [which(AEK0317$MarkerNumber>=81 & AEK0317$MarkerNumber<82)] <- 81
-AEK0317$Trial [which(AEK0317$MarkerNumber>=82 & AEK0317$MarkerNumber<83)] <- 82
-AEK0317$Trial [which(AEK0317$MarkerNumber>=83 & AEK0317$MarkerNumber<84)] <- 83
-AEK0317$Trial [which(AEK0317$MarkerNumber>=84 & AEK0317$MarkerNumber<85)] <- 84
-AEK0317$Trial [which(AEK0317$MarkerNumber>=85 & AEK0317$MarkerNumber<86)] <- 85
-AEK0317$Trial [which(AEK0317$MarkerNumber>=86 & AEK0317$MarkerNumber<87)] <- 86
-AEK0317$Trial [which(AEK0317$MarkerNumber>=87 & AEK0317$MarkerNumber<88)] <- 87
-AEK0317$Trial [which(AEK0317$MarkerNumber>=88 & AEK0317$MarkerNumber<89)] <- 88
-AEK0317$Trial [which(AEK0317$MarkerNumber>=89 & AEK0317$MarkerNumber<90)] <- 89
-AEK0317$Trial [which(AEK0317$MarkerNumber>=90 & AEK0317$MarkerNumber<91)] <- 90
-AEK0317$Trial [which(AEK0317$MarkerNumber>=91 & AEK0317$MarkerNumber<92)] <- 91
-AEK0317$Trial [which(AEK0317$MarkerNumber>=92 & AEK0317$MarkerNumber<93)] <- 92
-AEK0317$Trial [which(AEK0317$MarkerNumber>=93 & AEK0317$MarkerNumber<94)] <- 93
-AEK0317$Trial [which(AEK0317$MarkerNumber>=94 & AEK0317$MarkerNumber<95)] <- 94
-AEK0317$Trial [which(AEK0317$MarkerNumber>=95 & AEK0317$MarkerNumber<96)] <- 95
-AEK0317$Trial [which(AEK0317$MarkerNumber>=96 & AEK0317$MarkerNumber<97)] <- 96
-AEK0317$Trial [which(AEK0317$MarkerNumber>=97 & AEK0317$MarkerNumber<98)] <- 97
-AEK0317$Trial [which(AEK0317$MarkerNumber>=98 & AEK0317$MarkerNumber<99)] <- 98
-AEK0317$Trial [which(AEK0317$MarkerNumber>=99 & AEK0317$MarkerNumber<100)] <- 99
-AEK0317$Trial [which(AEK0317$MarkerNumber>=100 & AEK0317$MarkerNumber<101)] <- 100
-AEK0317$Trial [which(AEK0317$MarkerNumber>=101 & AEK0317$MarkerNumber<102)] <- 101
-AEK0317$Trial [which(AEK0317$MarkerNumber>=102 & AEK0317$MarkerNumber<103)] <- 102
-AEK0317$Trial [which(AEK0317$MarkerNumber>=103 & AEK0317$MarkerNumber<104)] <- 103
-AEK0317$Trial [which(AEK0317$MarkerNumber>=104 & AEK0317$MarkerNumber<105)] <- 104
-AEK0317$Trial [which(AEK0317$MarkerNumber>=105 & AEK0317$MarkerNumber<106)] <- 105
-AEK0317$Trial [which(AEK0317$MarkerNumber>=106 & AEK0317$MarkerNumber<107)] <- 106
-AEK0317$Trial [which(AEK0317$MarkerNumber>=107 & AEK0317$MarkerNumber<108)] <- 107
-AEK0317$Trial [which(AEK0317$MarkerNumber>=108 & AEK0317$MarkerNumber<109)] <- 108
-AEK0317$Trial [which(AEK0317$MarkerNumber>=109 & AEK0317$MarkerNumber<110)] <- 109
-AEK0317$Trial [which(AEK0317$MarkerNumber>=110 & AEK0317$MarkerNumber<111)] <- 110
-AEK0317$Trial [which(AEK0317$MarkerNumber>=111 & AEK0317$MarkerNumber<112)] <- 111
-AEK0317$Trial [which(AEK0317$MarkerNumber>=112 & AEK0317$MarkerNumber<113)] <- 112
-AEK0317$Trial [which(AEK0317$MarkerNumber>=113 & AEK0317$MarkerNumber<114)] <- 113
-AEK0317$Trial [which(AEK0317$MarkerNumber>=114 & AEK0317$MarkerNumber<115)] <- 114
-AEK0317$Trial [which(AEK0317$MarkerNumber>=115 & AEK0317$MarkerNumber<116)] <- 115
-AEK0317$Trial [which(AEK0317$MarkerNumber>=116 & AEK0317$MarkerNumber<117)] <- 116
-AEK0317$Trial [which(AEK0317$MarkerNumber>=117 & AEK0317$MarkerNumber<118)] <- 117
-AEK0317$Trial [which(AEK0317$MarkerNumber>=118 & AEK0317$MarkerNumber<119)] <- 118
-AEK0317$Trial [which(AEK0317$MarkerNumber>=119 & AEK0317$MarkerNumber<120)] <- 119
-AEK0317$Trial [which(AEK0317$MarkerNumber>=120 & AEK0317$MarkerNumber<121)] <- 120
-AEK0317$Trial [which(AEK0317$MarkerNumber>=121 & AEK0317$MarkerNumber<122)] <- 121
-AEK0317$Trial [which(AEK0317$MarkerNumber>=122 & AEK0317$MarkerNumber<123)] <- 122
-AEK0317$Trial [which(AEK0317$MarkerNumber>=123 & AEK0317$MarkerNumber<124)] <- 123
-AEK0317$Trial [which(AEK0317$MarkerNumber>=124 & AEK0317$MarkerNumber<125)] <- 124
-AEK0317$Trial [which(AEK0317$MarkerNumber>=125 & AEK0317$MarkerNumber<126)] <- 125
-AEK0317$Trial [which(AEK0317$MarkerNumber>=126 & AEK0317$MarkerNumber<127)] <- 126
-AEK0317$Trial [which(AEK0317$MarkerNumber>=127 & AEK0317$MarkerNumber<128)] <- 127
-AEK0317$Trial [which(AEK0317$MarkerNumber>=128 & AEK0317$MarkerNumber<129)] <- 128
-AEK0317$Trial [which(AEK0317$MarkerNumber>=129 & AEK0317$MarkerNumber<130)] <- 129
-AEK0317$Trial [which(AEK0317$MarkerNumber>=130 & AEK0317$MarkerNumber<131)] <- 130
-AEK0317$Trial [which(AEK0317$MarkerNumber>=131 & AEK0317$MarkerNumber<132)] <- 131
-AEK0317$Trial [which(AEK0317$MarkerNumber>=132 & AEK0317$MarkerNumber<133)] <- 132
-AEK0317$Trial [which(AEK0317$MarkerNumber>=133 & AEK0317$MarkerNumber<134)] <- 133
-AEK0317$Trial [which(AEK0317$MarkerNumber>=134 & AEK0317$MarkerNumber<135)] <- 134
-AEK0317$Trial [which(AEK0317$MarkerNumber>=135 & AEK0317$MarkerNumber<136)] <- 135
-AEK0317$Trial [which(AEK0317$MarkerNumber>=136 & AEK0317$MarkerNumber<137)] <- 136
-AEK0317$Trial [which(AEK0317$MarkerNumber>=137 & AEK0317$MarkerNumber<138)] <- 137
-AEK0317$Trial [which(AEK0317$MarkerNumber>=138 & AEK0317$MarkerNumber<139)] <- 138
-AEK0317$Trial [which(AEK0317$MarkerNumber>=139 & AEK0317$MarkerNumber<140)] <- 139
-AEK0317$Trial [which(AEK0317$MarkerNumber>=140 & AEK0317$MarkerNumber<141)] <- 140
-AEK0317$Trial [which(AEK0317$MarkerNumber>=141 & AEK0317$MarkerNumber<142)] <- 141
-AEK0317$Trial [which(AEK0317$MarkerNumber>=142 & AEK0317$MarkerNumber<143)] <- 142
-AEK0317$Trial [which(AEK0317$MarkerNumber>=143 & AEK0317$MarkerNumber<144)] <- 143
-AEK0317$Trial [which(AEK0317$MarkerNumber>=144 & AEK0317$MarkerNumber<145)] <- 144
-AEK0317$Trial [which(AEK0317$MarkerNumber>=145 & AEK0317$MarkerNumber<146)] <- 145
-AEK0317$Trial [which(AEK0317$MarkerNumber>=146 & AEK0317$MarkerNumber<147)] <- 146
-AEK0317$Trial [which(AEK0317$MarkerNumber>=147 & AEK0317$MarkerNumber<148)] <- 147
-AEK0317$Trial [which(AEK0317$MarkerNumber>=148 & AEK0317$MarkerNumber<149)] <- 148
-AEK0317$Trial [which(AEK0317$MarkerNumber>=149 & AEK0317$MarkerNumber<150)] <- 149
-AEK0317$Trial [which(AEK0317$MarkerNumber>=150 & AEK0317$MarkerNumber<151)] <- 150
-AEK0317$Trial [which(AEK0317$MarkerNumber>=151 & AEK0317$MarkerNumber<152)] <- 151
-AEK0317$Trial [which(AEK0317$MarkerNumber>=152 & AEK0317$MarkerNumber<153)] <- 152
-AEK0317$Trial [which(AEK0317$MarkerNumber>=153 & AEK0317$MarkerNumber<154)] <- 153
-AEK0317$Trial [which(AEK0317$MarkerNumber>=154 & AEK0317$MarkerNumber<155)] <- 154
-AEK0317$Trial [which(AEK0317$MarkerNumber>=155 & AEK0317$MarkerNumber<156)] <- 155
-AEK0317$Trial [which(AEK0317$MarkerNumber>=156 & AEK0317$MarkerNumber<157)] <- 156
-AEK0317$Trial [which(AEK0317$MarkerNumber>=157 & AEK0317$MarkerNumber<158)] <- 157
-AEK0317$Trial [which(AEK0317$MarkerNumber>=158 & AEK0317$MarkerNumber<159)] <- 158
-AEK0317$Trial [which(AEK0317$MarkerNumber>=159 & AEK0317$MarkerNumber<160)] <- 159
-AEK0317$Trial [which(AEK0317$MarkerNumber>=160 & AEK0317$MarkerNumber<161)] <- 160
-AEK0317$Trial [which(AEK0317$MarkerNumber>=161 & AEK0317$MarkerNumber<162)] <- 161
-AEK0317$Trial [which(AEK0317$MarkerNumber>=162 & AEK0317$MarkerNumber<163)] <- 162
-AEK0317$Trial [which(AEK0317$MarkerNumber>=163 & AEK0317$MarkerNumber<164)] <- 163
-AEK0317$Trial [which(AEK0317$MarkerNumber>=164 & AEK0317$MarkerNumber<165)] <- 164
-AEK0317$Trial [which(AEK0317$MarkerNumber>=165 & AEK0317$MarkerNumber<166)] <- 165
-AEK0317$Trial [which(AEK0317$MarkerNumber>=166 & AEK0317$MarkerNumber<167)] <- 166
-AEK0317$Trial [which(AEK0317$MarkerNumber>=167 & AEK0317$MarkerNumber<168)] <- 167
-AEK0317$Trial [which(AEK0317$MarkerNumber>=168 & AEK0317$MarkerNumber<169)] <- 168
-AEK0317$Trial [which(AEK0317$MarkerNumber>=169 & AEK0317$MarkerNumber<170)] <- 169
-AEK0317$Trial [which(AEK0317$MarkerNumber>=170 & AEK0317$MarkerNumber<171)] <- 170
-AEK0317$Trial [which(AEK0317$MarkerNumber>=171 & AEK0317$MarkerNumber<172)] <- 171
-AEK0317$Trial [which(AEK0317$MarkerNumber>=172 & AEK0317$MarkerNumber<173)] <- 172
-AEK0317$Trial [which(AEK0317$MarkerNumber>=173 & AEK0317$MarkerNumber<174)] <- 173
-AEK0317$Trial [which(AEK0317$MarkerNumber>=174 & AEK0317$MarkerNumber<175)] <- 174
-AEK0317$Trial [which(AEK0317$MarkerNumber>=175 & AEK0317$MarkerNumber<176)] <- 175
-AEK0317$Trial [which(AEK0317$MarkerNumber>=176 & AEK0317$MarkerNumber<177)] <- 176
-AEK0317$Trial [which(AEK0317$MarkerNumber>=177 & AEK0317$MarkerNumber<178)] <- 177
-AEK0317$Trial [which(AEK0317$MarkerNumber>=178 & AEK0317$MarkerNumber<179)] <- 178
-AEK0317$Trial [which(AEK0317$MarkerNumber>=179 & AEK0317$MarkerNumber<180)] <- 179
-AEK0317$Trial [which(AEK0317$MarkerNumber>=180 & AEK0317$MarkerNumber<181)] <- 180
-AEK0317$Trial [which(AEK0317$MarkerNumber>=181 & AEK0317$MarkerNumber<182)] <- 181
-AEK0317$Trial [which(AEK0317$MarkerNumber>=182 & AEK0317$MarkerNumber<183)] <- 182
-AEK0317$Trial [which(AEK0317$MarkerNumber>=183 & AEK0317$MarkerNumber<184)] <- 183
-AEK0317$Trial [which(AEK0317$MarkerNumber>=184 & AEK0317$MarkerNumber<185)] <- 184
-AEK0317$Trial [which(AEK0317$MarkerNumber>=185 & AEK0317$MarkerNumber<186)] <- 185
-AEK0317$Trial [which(AEK0317$MarkerNumber>=186 & AEK0317$MarkerNumber<187)] <- 186
-AEK0317$Trial [which(AEK0317$MarkerNumber>=187 & AEK0317$MarkerNumber<188)] <- 187
-AEK0317$Trial [which(AEK0317$MarkerNumber>=188 & AEK0317$MarkerNumber<189)] <- 188
-AEK0317$Trial [which(AEK0317$MarkerNumber>=189 & AEK0317$MarkerNumber<190)] <- 189
-AEK0317$Trial [which(AEK0317$MarkerNumber>=190 & AEK0317$MarkerNumber<191)] <- 190
-AEK0317$Trial [which(AEK0317$MarkerNumber>=191 & AEK0317$MarkerNumber<192)] <- 191
-AEK0317$Trial [which(AEK0317$MarkerNumber>=192 & AEK0317$MarkerNumber<193)] <- 192
-AEK0317$Trial [which(AEK0317$MarkerNumber>=193 & AEK0317$MarkerNumber<194)] <- 193
-AEK0317$Trial [which(AEK0317$MarkerNumber>=194 & AEK0317$MarkerNumber<195)] <- 194
-AEK0317$Trial [which(AEK0317$MarkerNumber>=195 & AEK0317$MarkerNumber<196)] <- 195
-AEK0317$Trial [which(AEK0317$MarkerNumber>=196 & AEK0317$MarkerNumber<197)] <- 196
-AEK0317$Trial [which(AEK0317$MarkerNumber>=197 & AEK0317$MarkerNumber<198)] <- 197
-AEK0317$Trial [which(AEK0317$MarkerNumber>=198 & AEK0317$MarkerNumber<199)] <- 198
-AEK0317$Trial [which(AEK0317$MarkerNumber>=199 & AEK0317$MarkerNumber<200)] <- 199
-AEK0317$Trial [which(AEK0317$MarkerNumber>=200 & AEK0317$MarkerNumber<200.999)] <- 200
-AEK0317$Trial [which(AEK0317$MarkerNumber>=201 & AEK0317$MarkerNumber<201.999)] <- 201
-write.table(AEK0317,file="/Volumes/NO NAME/Csvgroup3-28/CSEyeAEK0317.csv",sep=",",row.names=F)
+samplecsv$Trial [which(samplecsv$MarkerNumber>=1 & samplecsv$MarkerNumber<2)] <- 1
+samplecsv$Trial [which(samplecsv$MarkerNumber>=2 & samplecsv$MarkerNumber<3)] <- 2
+samplecsv$Trial [which(samplecsv$MarkerNumber>=3 & samplecsv$MarkerNumber<4)] <- 3
+samplecsv$Trial [which(samplecsv$MarkerNumber>=4 & samplecsv$MarkerNumber<5)] <- 4
+samplecsv$Trial [which(samplecsv$MarkerNumber>=5 & samplecsv$MarkerNumber<6)] <- 5
+samplecsv$Trial [which(samplecsv$MarkerNumber>=6 & samplecsv$MarkerNumber<7)] <- 6
+samplecsv$Trial [which(samplecsv$MarkerNumber>=7 & samplecsv$MarkerNumber<8)] <- 7
+samplecsv$Trial [which(samplecsv$MarkerNumber>=8 & samplecsv$MarkerNumber<9)] <- 8
+samplecsv$Trial [which(samplecsv$MarkerNumber>=9 & samplecsv$MarkerNumber<10)] <- 9
+samplecsv$Trial [which(samplecsv$MarkerNumber>=10 & samplecsv$MarkerNumber<11)] <- 10
+samplecsv$Trial [which(samplecsv$MarkerNumber>=11 & samplecsv$MarkerNumber<12)] <- 11
+samplecsv$Trial [which(samplecsv$MarkerNumber>=12 & samplecsv$MarkerNumber<13)] <- 12
+samplecsv$Trial [which(samplecsv$MarkerNumber>=13 & samplecsv$MarkerNumber<14)] <- 13
+samplecsv$Trial [which(samplecsv$MarkerNumber>=14 & samplecsv$MarkerNumber<15)] <- 14
+samplecsv$Trial [which(samplecsv$MarkerNumber>=15 & samplecsv$MarkerNumber<16)] <- 15
+samplecsv$Trial [which(samplecsv$MarkerNumber>=16 & samplecsv$MarkerNumber<17)] <- 16
+samplecsv$Trial [which(samplecsv$MarkerNumber>=17 & samplecsv$MarkerNumber<18)] <- 17
+samplecsv$Trial [which(samplecsv$MarkerNumber>=18 & samplecsv$MarkerNumber<19)] <- 18
+samplecsv$Trial [which(samplecsv$MarkerNumber>=19 & samplecsv$MarkerNumber<20)] <- 19
+samplecsv$Trial [which(samplecsv$MarkerNumber>=20 & samplecsv$MarkerNumber<21)] <- 20
+samplecsv$Trial [which(samplecsv$MarkerNumber>=21 & samplecsv$MarkerNumber<22)] <- 21
+samplecsv$Trial [which(samplecsv$MarkerNumber>=22 & samplecsv$MarkerNumber<23)] <- 22
+samplecsv$Trial [which(samplecsv$MarkerNumber>=23 & samplecsv$MarkerNumber<24)] <- 23
+samplecsv$Trial [which(samplecsv$MarkerNumber>=24 & samplecsv$MarkerNumber<25)] <- 24
+samplecsv$Trial [which(samplecsv$MarkerNumber>=25 & samplecsv$MarkerNumber<26)] <- 25
+samplecsv$Trial [which(samplecsv$MarkerNumber>=26 & samplecsv$MarkerNumber<27)] <- 26
+samplecsv$Trial [which(samplecsv$MarkerNumber>=27 & samplecsv$MarkerNumber<28)] <- 27
+samplecsv$Trial [which(samplecsv$MarkerNumber>=28 & samplecsv$MarkerNumber<29)] <- 28
+samplecsv$Trial [which(samplecsv$MarkerNumber>=29 & samplecsv$MarkerNumber<30)] <- 29
+samplecsv$Trial [which(samplecsv$MarkerNumber>=30 & samplecsv$MarkerNumber<31)] <- 30
+samplecsv$Trial [which(samplecsv$MarkerNumber>=31 & samplecsv$MarkerNumber<32)] <- 31
+samplecsv$Trial [which(samplecsv$MarkerNumber>=32 & samplecsv$MarkerNumber<33)] <- 32
+samplecsv$Trial [which(samplecsv$MarkerNumber>=33 & samplecsv$MarkerNumber<34)] <- 33
+samplecsv$Trial [which(samplecsv$MarkerNumber>=34 & samplecsv$MarkerNumber<35)] <- 34
+samplecsv$Trial [which(samplecsv$MarkerNumber>=35 & samplecsv$MarkerNumber<36)] <- 35
+samplecsv$Trial [which(samplecsv$MarkerNumber>=36 & samplecsv$MarkerNumber<37)] <- 36
+samplecsv$Trial [which(samplecsv$MarkerNumber>=37 & samplecsv$MarkerNumber<38)] <- 37
+samplecsv$Trial [which(samplecsv$MarkerNumber>=38 & samplecsv$MarkerNumber<39)] <- 38
+samplecsv$Trial [which(samplecsv$MarkerNumber>=39 & samplecsv$MarkerNumber<40)] <- 39
+samplecsv$Trial [which(samplecsv$MarkerNumber>=40 & samplecsv$MarkerNumber<41)] <- 40
+samplecsv$Trial [which(samplecsv$MarkerNumber>=41 & samplecsv$MarkerNumber<42)] <- 41
+samplecsv$Trial [which(samplecsv$MarkerNumber>=42 & samplecsv$MarkerNumber<43)] <- 42
+samplecsv$Trial [which(samplecsv$MarkerNumber>=43 & samplecsv$MarkerNumber<44)] <- 43
+samplecsv$Trial [which(samplecsv$MarkerNumber>=44 & samplecsv$MarkerNumber<45)] <- 44
+samplecsv$Trial [which(samplecsv$MarkerNumber>=45 & samplecsv$MarkerNumber<46)] <- 45
+samplecsv$Trial [which(samplecsv$MarkerNumber>=46 & samplecsv$MarkerNumber<47)] <- 46
+samplecsv$Trial [which(samplecsv$MarkerNumber>=47 & samplecsv$MarkerNumber<48)] <- 47
+samplecsv$Trial [which(samplecsv$MarkerNumber>=48 & samplecsv$MarkerNumber<49)] <- 48
+samplecsv$Trial [which(samplecsv$MarkerNumber>=49 & samplecsv$MarkerNumber<50)] <- 49
+samplecsv$Trial [which(samplecsv$MarkerNumber>=50 & samplecsv$MarkerNumber<51)] <- 50
+samplecsv$Trial [which(samplecsv$MarkerNumber>=51 & samplecsv$MarkerNumber<52)] <- 51
+samplecsv$Trial [which(samplecsv$MarkerNumber>=52 & samplecsv$MarkerNumber<53)] <- 52
+samplecsv$Trial [which(samplecsv$MarkerNumber>=53 & samplecsv$MarkerNumber<54)] <- 53
+samplecsv$Trial [which(samplecsv$MarkerNumber>=54 & samplecsv$MarkerNumber<55)] <- 54
+samplecsv$Trial [which(samplecsv$MarkerNumber>=55 & samplecsv$MarkerNumber<56)] <- 55
+samplecsv$Trial [which(samplecsv$MarkerNumber>=56 & samplecsv$MarkerNumber<57)] <- 56
+samplecsv$Trial [which(samplecsv$MarkerNumber>=57 & samplecsv$MarkerNumber<58)] <- 57
+samplecsv$Trial [which(samplecsv$MarkerNumber>=58 & samplecsv$MarkerNumber<59)] <- 58
+samplecsv$Trial [which(samplecsv$MarkerNumber>=59 & samplecsv$MarkerNumber<60)] <- 59
+samplecsv$Trial [which(samplecsv$MarkerNumber>=60 & samplecsv$MarkerNumber<61)] <- 60
+samplecsv$Trial [which(samplecsv$MarkerNumber>=61 & samplecsv$MarkerNumber<62)] <- 61
+samplecsv$Trial [which(samplecsv$MarkerNumber>=62 & samplecsv$MarkerNumber<63)] <- 62
+samplecsv$Trial [which(samplecsv$MarkerNumber>=63 & samplecsv$MarkerNumber<64)] <- 63
+samplecsv$Trial [which(samplecsv$MarkerNumber>=64 & samplecsv$MarkerNumber<65)] <- 64
+samplecsv$Trial [which(samplecsv$MarkerNumber>=65 & samplecsv$MarkerNumber<66)] <- 65
+samplecsv$Trial [which(samplecsv$MarkerNumber>=66 & samplecsv$MarkerNumber<67)] <- 66
+samplecsv$Trial [which(samplecsv$MarkerNumber>=67 & samplecsv$MarkerNumber<68)] <- 67
+samplecsv$Trial [which(samplecsv$MarkerNumber>=68 & samplecsv$MarkerNumber<69)] <- 68
+samplecsv$Trial [which(samplecsv$MarkerNumber>=69 & samplecsv$MarkerNumber<70)] <- 69
+samplecsv$Trial [which(samplecsv$MarkerNumber>=70 & samplecsv$MarkerNumber<71)] <- 70
+samplecsv$Trial [which(samplecsv$MarkerNumber>=71 & samplecsv$MarkerNumber<72)] <- 71
+samplecsv$Trial [which(samplecsv$MarkerNumber>=72 & samplecsv$MarkerNumber<73)] <- 72
+samplecsv$Trial [which(samplecsv$MarkerNumber>=73 & samplecsv$MarkerNumber<74)] <- 73
+samplecsv$Trial [which(samplecsv$MarkerNumber>=74 & samplecsv$MarkerNumber<75)] <- 74
+samplecsv$Trial [which(samplecsv$MarkerNumber>=75 & samplecsv$MarkerNumber<76)] <- 75
+samplecsv$Trial [which(samplecsv$MarkerNumber>=76 & samplecsv$MarkerNumber<77)] <- 76
+samplecsv$Trial [which(samplecsv$MarkerNumber>=77 & samplecsv$MarkerNumber<78)] <- 77
+samplecsv$Trial [which(samplecsv$MarkerNumber>=78 & samplecsv$MarkerNumber<79)] <- 78
+samplecsv$Trial [which(samplecsv$MarkerNumber>=79 & samplecsv$MarkerNumber<80)] <- 79
+samplecsv$Trial [which(samplecsv$MarkerNumber>=80 & samplecsv$MarkerNumber<81)] <- 80
+samplecsv$Trial [which(samplecsv$MarkerNumber>=81 & samplecsv$MarkerNumber<82)] <- 81
+samplecsv$Trial [which(samplecsv$MarkerNumber>=82 & samplecsv$MarkerNumber<83)] <- 82
+samplecsv$Trial [which(samplecsv$MarkerNumber>=83 & samplecsv$MarkerNumber<84)] <- 83
+samplecsv$Trial [which(samplecsv$MarkerNumber>=84 & samplecsv$MarkerNumber<85)] <- 84
+samplecsv$Trial [which(samplecsv$MarkerNumber>=85 & samplecsv$MarkerNumber<86)] <- 85
+samplecsv$Trial [which(samplecsv$MarkerNumber>=86 & samplecsv$MarkerNumber<87)] <- 86
+samplecsv$Trial [which(samplecsv$MarkerNumber>=87 & samplecsv$MarkerNumber<88)] <- 87
+samplecsv$Trial [which(samplecsv$MarkerNumber>=88 & samplecsv$MarkerNumber<89)] <- 88
+samplecsv$Trial [which(samplecsv$MarkerNumber>=89 & samplecsv$MarkerNumber<90)] <- 89
+samplecsv$Trial [which(samplecsv$MarkerNumber>=90 & samplecsv$MarkerNumber<91)] <- 90
+samplecsv$Trial [which(samplecsv$MarkerNumber>=91 & samplecsv$MarkerNumber<92)] <- 91
+samplecsv$Trial [which(samplecsv$MarkerNumber>=92 & samplecsv$MarkerNumber<93)] <- 92
+samplecsv$Trial [which(samplecsv$MarkerNumber>=93 & samplecsv$MarkerNumber<94)] <- 93
+samplecsv$Trial [which(samplecsv$MarkerNumber>=94 & samplecsv$MarkerNumber<95)] <- 94
+samplecsv$Trial [which(samplecsv$MarkerNumber>=95 & samplecsv$MarkerNumber<96)] <- 95
+samplecsv$Trial [which(samplecsv$MarkerNumber>=96 & samplecsv$MarkerNumber<97)] <- 96
+samplecsv$Trial [which(samplecsv$MarkerNumber>=97 & samplecsv$MarkerNumber<98)] <- 97
+samplecsv$Trial [which(samplecsv$MarkerNumber>=98 & samplecsv$MarkerNumber<99)] <- 98
+samplecsv$Trial [which(samplecsv$MarkerNumber>=99 & samplecsv$MarkerNumber<100)] <- 99
+samplecsv$Trial [which(samplecsv$MarkerNumber>=100 & samplecsv$MarkerNumber<101)] <- 100
+samplecsv$Trial [which(samplecsv$MarkerNumber>=101 & samplecsv$MarkerNumber<102)] <- 101
+samplecsv$Trial [which(samplecsv$MarkerNumber>=102 & samplecsv$MarkerNumber<103)] <- 102
+samplecsv$Trial [which(samplecsv$MarkerNumber>=103 & samplecsv$MarkerNumber<104)] <- 103
+samplecsv$Trial [which(samplecsv$MarkerNumber>=104 & samplecsv$MarkerNumber<105)] <- 104
+samplecsv$Trial [which(samplecsv$MarkerNumber>=105 & samplecsv$MarkerNumber<106)] <- 105
+samplecsv$Trial [which(samplecsv$MarkerNumber>=106 & samplecsv$MarkerNumber<107)] <- 106
+samplecsv$Trial [which(samplecsv$MarkerNumber>=107 & samplecsv$MarkerNumber<108)] <- 107
+samplecsv$Trial [which(samplecsv$MarkerNumber>=108 & samplecsv$MarkerNumber<109)] <- 108
+samplecsv$Trial [which(samplecsv$MarkerNumber>=109 & samplecsv$MarkerNumber<110)] <- 109
+samplecsv$Trial [which(samplecsv$MarkerNumber>=110 & samplecsv$MarkerNumber<111)] <- 110
+samplecsv$Trial [which(samplecsv$MarkerNumber>=111 & samplecsv$MarkerNumber<112)] <- 111
+samplecsv$Trial [which(samplecsv$MarkerNumber>=112 & samplecsv$MarkerNumber<113)] <- 112
+samplecsv$Trial [which(samplecsv$MarkerNumber>=113 & samplecsv$MarkerNumber<114)] <- 113
+samplecsv$Trial [which(samplecsv$MarkerNumber>=114 & samplecsv$MarkerNumber<115)] <- 114
+samplecsv$Trial [which(samplecsv$MarkerNumber>=115 & samplecsv$MarkerNumber<116)] <- 115
+samplecsv$Trial [which(samplecsv$MarkerNumber>=116 & samplecsv$MarkerNumber<117)] <- 116
+samplecsv$Trial [which(samplecsv$MarkerNumber>=117 & samplecsv$MarkerNumber<118)] <- 117
+samplecsv$Trial [which(samplecsv$MarkerNumber>=118 & samplecsv$MarkerNumber<119)] <- 118
+samplecsv$Trial [which(samplecsv$MarkerNumber>=119 & samplecsv$MarkerNumber<120)] <- 119
+samplecsv$Trial [which(samplecsv$MarkerNumber>=120 & samplecsv$MarkerNumber<121)] <- 120
+samplecsv$Trial [which(samplecsv$MarkerNumber>=121 & samplecsv$MarkerNumber<122)] <- 121
+samplecsv$Trial [which(samplecsv$MarkerNumber>=122 & samplecsv$MarkerNumber<123)] <- 122
+samplecsv$Trial [which(samplecsv$MarkerNumber>=123 & samplecsv$MarkerNumber<124)] <- 123
+samplecsv$Trial [which(samplecsv$MarkerNumber>=124 & samplecsv$MarkerNumber<125)] <- 124
+samplecsv$Trial [which(samplecsv$MarkerNumber>=125 & samplecsv$MarkerNumber<126)] <- 125
+samplecsv$Trial [which(samplecsv$MarkerNumber>=126 & samplecsv$MarkerNumber<127)] <- 126
+samplecsv$Trial [which(samplecsv$MarkerNumber>=127 & samplecsv$MarkerNumber<128)] <- 127
+samplecsv$Trial [which(samplecsv$MarkerNumber>=128 & samplecsv$MarkerNumber<129)] <- 128
+samplecsv$Trial [which(samplecsv$MarkerNumber>=129 & samplecsv$MarkerNumber<130)] <- 129
+samplecsv$Trial [which(samplecsv$MarkerNumber>=130 & samplecsv$MarkerNumber<131)] <- 130
+samplecsv$Trial [which(samplecsv$MarkerNumber>=131 & samplecsv$MarkerNumber<132)] <- 131
+samplecsv$Trial [which(samplecsv$MarkerNumber>=132 & samplecsv$MarkerNumber<133)] <- 132
+samplecsv$Trial [which(samplecsv$MarkerNumber>=133 & samplecsv$MarkerNumber<134)] <- 133
+samplecsv$Trial [which(samplecsv$MarkerNumber>=134 & samplecsv$MarkerNumber<135)] <- 134
+samplecsv$Trial [which(samplecsv$MarkerNumber>=135 & samplecsv$MarkerNumber<136)] <- 135
+samplecsv$Trial [which(samplecsv$MarkerNumber>=136 & samplecsv$MarkerNumber<137)] <- 136
+samplecsv$Trial [which(samplecsv$MarkerNumber>=137 & samplecsv$MarkerNumber<138)] <- 137
+samplecsv$Trial [which(samplecsv$MarkerNumber>=138 & samplecsv$MarkerNumber<139)] <- 138
+samplecsv$Trial [which(samplecsv$MarkerNumber>=139 & samplecsv$MarkerNumber<140)] <- 139
+samplecsv$Trial [which(samplecsv$MarkerNumber>=140 & samplecsv$MarkerNumber<141)] <- 140
+samplecsv$Trial [which(samplecsv$MarkerNumber>=141 & samplecsv$MarkerNumber<142)] <- 141
+samplecsv$Trial [which(samplecsv$MarkerNumber>=142 & samplecsv$MarkerNumber<143)] <- 142
+samplecsv$Trial [which(samplecsv$MarkerNumber>=143 & samplecsv$MarkerNumber<144)] <- 143
+samplecsv$Trial [which(samplecsv$MarkerNumber>=144 & samplecsv$MarkerNumber<145)] <- 144
+samplecsv$Trial [which(samplecsv$MarkerNumber>=145 & samplecsv$MarkerNumber<146)] <- 145
+samplecsv$Trial [which(samplecsv$MarkerNumber>=146 & samplecsv$MarkerNumber<147)] <- 146
+samplecsv$Trial [which(samplecsv$MarkerNumber>=147 & samplecsv$MarkerNumber<148)] <- 147
+samplecsv$Trial [which(samplecsv$MarkerNumber>=148 & samplecsv$MarkerNumber<149)] <- 148
+samplecsv$Trial [which(samplecsv$MarkerNumber>=149 & samplecsv$MarkerNumber<150)] <- 149
+samplecsv$Trial [which(samplecsv$MarkerNumber>=150 & samplecsv$MarkerNumber<151)] <- 150
+samplecsv$Trial [which(samplecsv$MarkerNumber>=151 & samplecsv$MarkerNumber<152)] <- 151
+samplecsv$Trial [which(samplecsv$MarkerNumber>=152 & samplecsv$MarkerNumber<153)] <- 152
+samplecsv$Trial [which(samplecsv$MarkerNumber>=153 & samplecsv$MarkerNumber<154)] <- 153
+samplecsv$Trial [which(samplecsv$MarkerNumber>=154 & samplecsv$MarkerNumber<155)] <- 154
+samplecsv$Trial [which(samplecsv$MarkerNumber>=155 & samplecsv$MarkerNumber<156)] <- 155
+samplecsv$Trial [which(samplecsv$MarkerNumber>=156 & samplecsv$MarkerNumber<157)] <- 156
+samplecsv$Trial [which(samplecsv$MarkerNumber>=157 & samplecsv$MarkerNumber<158)] <- 157
+samplecsv$Trial [which(samplecsv$MarkerNumber>=158 & samplecsv$MarkerNumber<159)] <- 158
+samplecsv$Trial [which(samplecsv$MarkerNumber>=159 & samplecsv$MarkerNumber<160)] <- 159
+samplecsv$Trial [which(samplecsv$MarkerNumber>=160 & samplecsv$MarkerNumber<161)] <- 160
+samplecsv$Trial [which(samplecsv$MarkerNumber>=161 & samplecsv$MarkerNumber<162)] <- 161
+samplecsv$Trial [which(samplecsv$MarkerNumber>=162 & samplecsv$MarkerNumber<163)] <- 162
+samplecsv$Trial [which(samplecsv$MarkerNumber>=163 & samplecsv$MarkerNumber<164)] <- 163
+samplecsv$Trial [which(samplecsv$MarkerNumber>=164 & samplecsv$MarkerNumber<165)] <- 164
+samplecsv$Trial [which(samplecsv$MarkerNumber>=165 & samplecsv$MarkerNumber<166)] <- 165
+samplecsv$Trial [which(samplecsv$MarkerNumber>=166 & samplecsv$MarkerNumber<167)] <- 166
+samplecsv$Trial [which(samplecsv$MarkerNumber>=167 & samplecsv$MarkerNumber<168)] <- 167
+samplecsv$Trial [which(samplecsv$MarkerNumber>=168 & samplecsv$MarkerNumber<169)] <- 168
+samplecsv$Trial [which(samplecsv$MarkerNumber>=169 & samplecsv$MarkerNumber<170)] <- 169
+samplecsv$Trial [which(samplecsv$MarkerNumber>=170 & samplecsv$MarkerNumber<171)] <- 170
+samplecsv$Trial [which(samplecsv$MarkerNumber>=171 & samplecsv$MarkerNumber<172)] <- 171
+samplecsv$Trial [which(samplecsv$MarkerNumber>=172 & samplecsv$MarkerNumber<173)] <- 172
+samplecsv$Trial [which(samplecsv$MarkerNumber>=173 & samplecsv$MarkerNumber<174)] <- 173
+samplecsv$Trial [which(samplecsv$MarkerNumber>=174 & samplecsv$MarkerNumber<175)] <- 174
+samplecsv$Trial [which(samplecsv$MarkerNumber>=175 & samplecsv$MarkerNumber<176)] <- 175
+samplecsv$Trial [which(samplecsv$MarkerNumber>=176 & samplecsv$MarkerNumber<177)] <- 176
+samplecsv$Trial [which(samplecsv$MarkerNumber>=177 & samplecsv$MarkerNumber<178)] <- 177
+samplecsv$Trial [which(samplecsv$MarkerNumber>=178 & samplecsv$MarkerNumber<179)] <- 178
+samplecsv$Trial [which(samplecsv$MarkerNumber>=179 & samplecsv$MarkerNumber<180)] <- 179
+samplecsv$Trial [which(samplecsv$MarkerNumber>=180 & samplecsv$MarkerNumber<181)] <- 180
+samplecsv$Trial [which(samplecsv$MarkerNumber>=181 & samplecsv$MarkerNumber<182)] <- 181
+samplecsv$Trial [which(samplecsv$MarkerNumber>=182 & samplecsv$MarkerNumber<183)] <- 182
+samplecsv$Trial [which(samplecsv$MarkerNumber>=183 & samplecsv$MarkerNumber<184)] <- 183
+samplecsv$Trial [which(samplecsv$MarkerNumber>=184 & samplecsv$MarkerNumber<185)] <- 184
+samplecsv$Trial [which(samplecsv$MarkerNumber>=185 & samplecsv$MarkerNumber<186)] <- 185
+samplecsv$Trial [which(samplecsv$MarkerNumber>=186 & samplecsv$MarkerNumber<187)] <- 186
+samplecsv$Trial [which(samplecsv$MarkerNumber>=187 & samplecsv$MarkerNumber<188)] <- 187
+samplecsv$Trial [which(samplecsv$MarkerNumber>=188 & samplecsv$MarkerNumber<189)] <- 188
+samplecsv$Trial [which(samplecsv$MarkerNumber>=189 & samplecsv$MarkerNumber<190)] <- 189
+samplecsv$Trial [which(samplecsv$MarkerNumber>=190 & samplecsv$MarkerNumber<191)] <- 190
+samplecsv$Trial [which(samplecsv$MarkerNumber>=191 & samplecsv$MarkerNumber<192)] <- 191
+samplecsv$Trial [which(samplecsv$MarkerNumber>=192 & samplecsv$MarkerNumber<193)] <- 192
+samplecsv$Trial [which(samplecsv$MarkerNumber>=193 & samplecsv$MarkerNumber<194)] <- 193
+samplecsv$Trial [which(samplecsv$MarkerNumber>=194 & samplecsv$MarkerNumber<195)] <- 194
+samplecsv$Trial [which(samplecsv$MarkerNumber>=195 & samplecsv$MarkerNumber<196)] <- 195
+samplecsv$Trial [which(samplecsv$MarkerNumber>=196 & samplecsv$MarkerNumber<197)] <- 196
+samplecsv$Trial [which(samplecsv$MarkerNumber>=197 & samplecsv$MarkerNumber<198)] <- 197
+samplecsv$Trial [which(samplecsv$MarkerNumber>=198 & samplecsv$MarkerNumber<199)] <- 198
+samplecsv$Trial [which(samplecsv$MarkerNumber>=199 & samplecsv$MarkerNumber<200)] <- 199
+samplecsv$Trial [which(samplecsv$MarkerNumber>=200 & samplecsv$MarkerNumber<200.999)] <- 200
+samplecsv$Trial [which(samplecsv$MarkerNumber>=201 & samplecsv$MarkerNumber<201.999)] <- 201
+write.table(samplecsv,file="/Volumes/NO NAME/Csvgroup3-28/CSEyesamplecsv.csv",sep=",",row.names=F)
 
 #read in the files
 #group into one data frame
